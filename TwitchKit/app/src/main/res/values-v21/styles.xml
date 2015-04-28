@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+    <style name="AppTheme" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:colorPrimary">@color/twitchPurple</item>
+        <item name="android:colorPrimaryDark">@color/darkPurple</item>
+        <item name="android:textColorPrimary">#e8e8e8</item>
+    </style>-->
+
+    <style name="commonListItemStyle">
+        <item name="android:translationZ">@dimen/list_item_translation_z</item>
+    </style>
+
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+
+        <item name="colorPrimary">@color/twitchPurple</item>
+        <item name="colorPrimaryDark">@color/darkPurple</item>
+        <item name="android:textColorPrimary">@color/dirtyWhite</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:editTextColor">@color/grey</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Text_DarkTheme">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textColorPrimary">@color/dirtyWhite</item>
+        <item name="android:textColorHint">@color/tonedPurple</item>
+    </style>
+</resources>
