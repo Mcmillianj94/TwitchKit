@@ -22,14 +22,15 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 
+import mp.joshua.com.twitchkit.CoverViewFactory;
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
 import mp.joshua.com.twitchkit.DataProviders.DataPostOffice;
 import mp.joshua.com.twitchkit.DataProviders.ParseSingleton;
@@ -39,9 +40,11 @@ public class MainPollFragment extends Fragment {
 
     private ParseSingleton mParseSingleton;
     private DataPostOffice mDataPostoffice;
+    private CoverViewFactory coverViewFactory;
     private String mCurrentActivity;
     private ParseObject mPollObject;
 
+    private RelativeLayout viewHolder;
     private TextView pollTitleView;
     private RadioGroup mRadioGroup;
     private Button voteButton;
@@ -63,6 +66,7 @@ public class MainPollFragment extends Fragment {
         mCurrentActivity = getArguments().getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY);
         mParseSingleton = ParseSingleton.getInstance(getActivity());
         mDataPostoffice = DataPostOffice.getInstance(getActivity());
+        coverViewFactory = new CoverViewFactory(getActivity());
 
     }
 
@@ -73,6 +77,8 @@ public class MainPollFragment extends Fragment {
         intentFilter.addAction(ConstantsLibrary.ACTION_POLL_CREATED);
         intentFilter.addAction(ConstantsLibrary.ACTION_POLL_RETRIEVED);
         intentFilter.addAction(ConstantsLibrary.ACTION_POLL_USERVOTED);
+        intentFilter.addAction(ConstantsLibrary.ACTION_POLL_DELETED);
+        intentFilter.addAction(ConstantsLibrary.ACTION_POLL_DATAERROR);
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
     }
 
@@ -80,18 +86,20 @@ public class MainPollFragment extends Fragment {
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(broadcastReceiver);
+        coverViewFactory.removeCoverView();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main_poll,container,false);
+        viewHolder = (RelativeLayout)v.findViewById(R.id.pollContainer);
         pollTitleView = (TextView)v.findViewById(R.id.textView_poll_title);
         mRadioGroup = (RadioGroup)v.findViewById(R.id.radioGroup_poll);
         voteButton = (Button)v.findViewById(R.id.button_mainPoll_vote);
         deleteButton = (Button)v.findViewById(R.id.button_mainPoll_delete);
 
-        voteButton.setOnClickListener(voteClickListener);
-        deleteButton.setOnClickListener(deleteClickListener);
+        voteButton.setOnClickListener(onClickListener);
+        deleteButton.setOnClickListener(onClickListener);
         return v;
     }
 
@@ -131,20 +139,35 @@ public class MainPollFragment extends Fragment {
         public void onReceive(Context context, Intent intent) {
             String actionId = intent.getAction();
 
-            if (actionId.equals(ConstantsLibrary.ACTION_POLL_CREATED)){
-                //Start query for CURRENT users Poll
-                mParseSingleton.getPoll(ParseUser.getCurrentUser().getObjectId());
+            switch (actionId){
+                case ConstantsLibrary.ACTION_POLL_CREATED:
+                    //Start query for CURRENT users Poll
+                    mParseSingleton.getPoll(ParseUser.getCurrentUser().getObjectId());
+                    break;
 
-            }else if (actionId.equals(ConstantsLibrary.ACTION_POLL_RETRIEVED)){
-                //Get the poll from DataPostOffice, Call populateUI function
-                mPollObject = mDataPostoffice.getPollObject();
-                populateUI();
+                case ConstantsLibrary.ACTION_POLL_RETRIEVED:
+                    //Get the poll from DataPostOffice, Call populateUI function
+                    mPollObject = mDataPostoffice.getPollObject();
+                    populateUI();
+                    break;
 
-            }else if (actionId.equals(ConstantsLibrary.ACTION_POLL_USERVOTED)){
-                //Start query for SELECTED users Poll
-                mParseSingleton.getPoll(getActivity().getIntent().getStringExtra(ConstantsLibrary.EXTRA_PARSEUSER_ID));
-                Toast.makeText(getActivity(),"poll voted",Toast.LENGTH_SHORT).show();
-                voteButton.setVisibility(View.GONE);
+                case ConstantsLibrary.ACTION_POLL_USERVOTED:
+                    //Start query for SELECTED users Poll
+                    mParseSingleton.getPoll(getActivity().getIntent().getStringExtra(ConstantsLibrary.EXTRA_PARSEUSER_ID));
+                    voteButton.setVisibility(View.GONE);
+                    break;
+
+                case ConstantsLibrary.ACTION_POLL_DELETED:
+                    break;
+
+                case ConstantsLibrary.ACTION_POLL_DATAERROR:
+                    coverViewFactory.removeCoverView();
+                    if (intent.getExtras().getString(ConstantsLibrary.EXTRA_ERROR_TYPE).equals(ConstantsLibrary.EXTRA_ERRORTYPE_NULL)){
+                        coverViewFactory.createInstructionCover(ConstantsLibrary.CONST_POLL_NULL_MESSAGE,mCurrentActivity);
+                    }else if (intent.getExtras().getString(ConstantsLibrary.EXTRA_ERROR_TYPE).equals(ConstantsLibrary.EXTRA_ERRORTYPE_QUERY)){
+                        coverViewFactory.createInstructionCover(ConstantsLibrary.CONST_QUERY_ERROR_MESSAGE,mCurrentActivity);
+                    }
+                    break;
             }
         }
     };
@@ -155,26 +178,26 @@ public class MainPollFragment extends Fragment {
         fragmentSetup();
     }
 
-    View.OnClickListener voteClickListener = new View.OnClickListener() {
+    View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            int selectedButton = mRadioGroup.getCheckedRadioButtonId();
-            //int voteNumber = 1;
+            int vID = v.getId();
 
-            //if(voteNumber !=  0){
-            Log.d("GritzTest", "" + selectedButton);
-                mParseSingleton.submitPollVote(
-                        ParseUser.getCurrentUser().getObjectId(),
-                        mPollObject,
-                        selectedButton);
-            //}
-        }
-    };
+            switch (vID){
+                case R.id.button_mainPoll_vote:
+                    int selectedButton = mRadioGroup.getCheckedRadioButtonId();
 
-    View.OnClickListener deleteClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            //Todo: create method in parse singleton to delete poll object
+                    Log.d("GritzTest", "" + selectedButton);
+                    mParseSingleton.submitPollVote(
+                            ParseUser.getCurrentUser().getObjectId(),
+                            mPollObject,
+                            selectedButton);
+                    break;
+
+                case R.id.button_mainPoll_delete:
+                    mParseSingleton.deletePollObject(mPollObject);
+                    break;
+            }
         }
     };
 
@@ -219,9 +242,12 @@ public class MainPollFragment extends Fragment {
             mRadioGroup.addView(radioButton);
             mRadioGroup.addView(progressBar);
         }
+        coverViewFactory.removeCoverView();
     }
 
     private void fragmentSetup(){
+        coverViewFactory.createLoadingCover();
+
         if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
             //Get current users poll
             mParseSingleton.getPoll(ParseUser.getCurrentUser().getObjectId());

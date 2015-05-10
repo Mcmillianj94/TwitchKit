@@ -18,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -68,12 +67,12 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_main_giveaway,container,false);
-        participantsHolder = (LinearLayout)getView().findViewById(R.id.linearLayout_mainGiveaway_participants);
-        mTitleTextView = (TextView)getView().findViewById(R.id.textView_giveaway_title);
-        mMessageTextView = (TextView)getView().findViewById(R.id.textView_giveaway_message);
-        mParticipantCount = (TextView)getView().findViewById(R.id.textView_giveaway_participantCount);
-        submitButton = (Button)getView().findViewById(R.id.Button_mainGiveaway_submit);
-        pickWinnerButton = (Button)getView().findViewById(R.id.Button_mainGiveaway_pickWinner);
+        participantsHolder = (LinearLayout)v.findViewById(R.id.linearLayout_mainGiveaway_participants);
+        mTitleTextView = (TextView)v.findViewById(R.id.textView_giveaway_title);
+        mMessageTextView = (TextView)v.findViewById(R.id.textView_giveaway_message);
+        mParticipantCount = (TextView)v.findViewById(R.id.textView_giveaway_participantCount);
+        submitButton = (Button)v.findViewById(R.id.Button_mainGiveaway_submit);
+        pickWinnerButton = (Button)v.findViewById(R.id.Button_mainGiveaway_pickWinner);
         return v;
     }
 
@@ -149,7 +148,6 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
 
                 //Randomize a number and pick the user at that index
                 int n = rand.nextInt(tempList.size());
-                Toast.makeText(getActivity(),"winner " + n,Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -165,7 +163,10 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
             }else if (actionId.equals(ConstantsLibrary.ACTION_GIVEAWAY_RETRIEVED)){
                 giveawayObject = mDataPostOffice.getGiveawayObject();
                 populateUI();
-            }
+
+            }else  if(actionId.equals(ConstantsLibrary.ACTION_GIVEAWAY_DELETED)){
+
+            };
         }
     };
 

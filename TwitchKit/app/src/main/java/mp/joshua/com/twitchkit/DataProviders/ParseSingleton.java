@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
@@ -195,7 +196,6 @@ public class ParseSingleton {
     public void getGiveaway(String ownerId){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Giveaway");
         query.whereEqualTo("owner", ownerId);
-        Toast.makeText(mContext,ownerId,Toast.LENGTH_SHORT).show();
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
@@ -257,10 +257,19 @@ public class ParseSingleton {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
-                    mDataPostOffice.setPollObject(list.get(0));
-                    Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_RETRIEVED);
-                    mContext.sendBroadcast(intent);
+                    if (list.size() > 0){
+                        mDataPostOffice.setPollObject(list.get(0));
+                        Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_RETRIEVED);
+                        mContext.sendBroadcast(intent);
+                    }else {
+                        Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_DATAERROR);
+                        intent.putExtra(ConstantsLibrary.EXTRA_ERROR_TYPE,ConstantsLibrary.EXTRA_ERRORTYPE_NULL);
+                        mContext.sendBroadcast(intent);
+                    }
                 } else {
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_DATAERROR);
+                    intent.putExtra(ConstantsLibrary.EXTRA_ERROR_TYPE,ConstantsLibrary.EXTRA_ERRORTYPE_QUERY);
+                    mContext.sendBroadcast(intent);
                     e.printStackTrace();
                 }
             }
@@ -294,5 +303,19 @@ public class ParseSingleton {
                 }
             });
         }
+    }
+
+    public void deletePollObject(ParseObject pollObject){
+        pollObject.deleteInBackground(new DeleteCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_DELETED);
+                    mContext.sendBroadcast(intent);
+                }else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
