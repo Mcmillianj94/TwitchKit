@@ -14,27 +14,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
+import com.parse.ParseUser;
+import com.parse.ui.ParseLoginActivity;
+import com.parse.ui.ParseLoginBuilder;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
-import mp.joshua.com.twitchkit.Fragments.CreateGiveawayFragment;
-import mp.joshua.com.twitchkit.Fragments.CreatePollFragment;
+import mp.joshua.com.twitchkit.DataProviders.DataPostOffice;
+import mp.joshua.com.twitchkit.DataProviders.ParseSingleton;
+import mp.joshua.com.twitchkit.Fragments.MainGiveawayFragment;
+import mp.joshua.com.twitchkit.Fragments.MainPollFragment;
 import mp.joshua.com.twitchkit.Fragments.SupportPageFragment;
 import mp.joshua.com.twitchkit.R;
 
 public class FormsActivity extends ActionBarActivity {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
+    ParseSingleton parseSingleton;
+    private static DataPostOffice mDataPostOffice;
     SectionsPagerAdapter mSectionsPagerAdapter;
-    ViewPager mViewPager;
+    public ViewPager mViewPager;
+
+    ArrayList<Fragment> formActivityFragList = null;
 
     Toolbar toolbar;
 
@@ -46,6 +48,8 @@ public class FormsActivity extends ActionBarActivity {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
+        parseSingleton = ParseSingleton.getInstance(FormsActivity.this);
+        mDataPostOffice = DataPostOffice.getInstance(FormsActivity.this);
         showLoginNotification();
 
         // Create the adapter that will return a fragment for each of the three
@@ -56,10 +60,10 @@ public class FormsActivity extends ActionBarActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
+
         // Bind the tabs to the ViewPager
         PagerSlidingTabStrip tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
         tabs.setViewPager(mViewPager);
-
         tabs.setIndicatorHeight(10);
         tabs.setIndicatorColor(getResources().getColor(R.color.dirtyWhite));
         tabs.setScrollOffset(20);
@@ -67,59 +71,61 @@ public class FormsActivity extends ActionBarActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_forms, menu);
+        parseSingleton.reloadOptionsMenu(menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        parseSingleton.reloadOptionsMenu(menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        }else if (id == R.id.action_logout){
+            parseSingleton.logUserOut(FormsActivity.this);
+
+        }else if (id == R.id.action_login){
+            ParseLoginBuilder builder = new ParseLoginBuilder(FormsActivity.this);
+            startActivityForResult(builder.build(),0);
         }
 
         return super.onOptionsItemSelected(item);
     }
 
     private void showLoginNotification(){
-        AlertDialog.Builder loginAlert = new AlertDialog.Builder(FormsActivity.this);
-        loginAlert.setTitle("Login");
-        loginAlert.setMessage("You must be logged in to access this screen.");
-        loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent loginIntent = new Intent(FormsActivity.this,LoginActivity.class);
-                loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
-                startActivity(loginIntent);
-            }
-        });
+        if (ParseUser.getCurrentUser() == null){
+            AlertDialog.Builder loginAlert = new AlertDialog.Builder(FormsActivity.this);
+            loginAlert.setTitle("Login");
+            loginAlert.setMessage("You must be logged in to access this screen.");
 
-        loginAlert.setNeutralButton("Sign Up", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                Intent signupIntent = new Intent(FormsActivity.this,LoginActivity.class);
-                signupIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_SIGNUP);
-                startActivity(signupIntent);
-            }
-        });
+            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent loginIntent = new Intent(FormsActivity.this, ParseLoginActivity.class);
+                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
+                    startActivity(loginIntent);
+                }
+            });
 
-        loginAlert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //
-            }
-        });
-
-        loginAlert.show();
+            loginAlert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            loginAlert.show();
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
@@ -129,17 +135,22 @@ public class FormsActivity extends ActionBarActivity {
         }
 
         @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
+        @Override
         public Fragment getItem(int position) {
 
             switch (position) {
                 case 0:
-                    return CreateGiveawayFragment.newInstance();
+                    return MainGiveawayFragment.newInstance(ConstantsLibrary.ARG_ACTIVITY_FORMS);
                 case 1:
-                    return CreatePollFragment.newInstance();
+                    return MainPollFragment.newInstance(ConstantsLibrary.ARG_ACTIVITY_FORMS);
                 case 2:
-                    return SupportPageFragment.newInstance(ConstantsLibrary.ARG_ACTIVITY_FORMS);
+                    return SupportPageFragment.newInstance(ConstantsLibrary.ARG_ACTIVITY_FORMS, ParseUser.getCurrentUser().getObjectId());
             }
-            return null;
+            return new Fragment();
         }
 
         @Override
@@ -161,9 +172,5 @@ public class FormsActivity extends ActionBarActivity {
             }
             return null;
         }
-    }
-    private Fragment getGiveawayFragment(){
-        //Todo:something great
-        return null;
     }
 }

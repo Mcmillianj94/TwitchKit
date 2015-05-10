@@ -1,117 +1,53 @@
 package mp.joshua.com.twitchkit.Adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.parse.ParseObject;
 
 import java.util.ArrayList;
 
 import mp.joshua.com.twitchkit.R;
 
-public class SupportPageAdapter extends BaseExpandableListAdapter {
+public class SupportPageAdapter extends BaseAdapter {
 
-    public ArrayList<String> groupItem, tempChild;
-    public ArrayList<Object> Childtem = new ArrayList<Object>();
-    public LayoutInflater minflater;
-    public Activity activity;
+    public static final long CONST_ID = 0x0101;
+    public ArrayList<Object> supportLinksArray;
     public Context mContext;
 
-    public SupportPageAdapter (Context context, ArrayList<String> grList, ArrayList<Object> childItem) {
+    public SupportPageAdapter (Context context, ArrayList<Object> arrayList) {
         mContext = context;
-        groupItem = grList;
-        this.Childtem = childItem;
-    }
-
-    public void setInflater(LayoutInflater mInflater, Activity act) {
-        this.minflater = mInflater;
-        activity = act;
+        supportLinksArray = arrayList;
     }
 
     @Override
-    public Object getChild(int groupPosition, int childPosition) {
-        return null;
+    public int getCount() {
+        return supportLinksArray.size();
     }
 
     @Override
-    public long getChildId(int groupPosition, int childPosition) {
-        return 0;
+    public Object getItem(int position) {
+        return supportLinksArray.get(position);
     }
 
     @Override
-    public View getChildView(int groupPosition, final int childPosition,
-                             boolean isLastChild, View convertView, ViewGroup parent) {
-        tempChild = (ArrayList<String>) Childtem.get(groupPosition);
-        TextView text = null;
+    public long getItemId(int position) {
+        return CONST_ID + position;
+    }
 
-        if (convertView == null) {
-            convertView = minflater.inflate(R.layout.tableview_child_userlist, null);
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null){
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.tableview_group_supportpage,parent,false);
         }
-        text = (TextView) convertView.findViewById(R.id.textView1);
-        text.setText(tempChild.get(childPosition));
-        convertView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(activity, tempChild.get(childPosition),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        ParseObject current = (ParseObject)supportLinksArray.get(position);
+
+        convertView.setTag(current.get("link"));
+        ((TextView)convertView.findViewById(R.id.tableView_GroupTitle_SupportPage)).setText(current.getString("title"));
         return convertView;
-    }
-
-    @Override
-    public int getChildrenCount(int groupPosition) {
-        return ((ArrayList<String>) Childtem.get(groupPosition)).size();
-    }
-
-    @Override
-    public Object getGroup(int groupPosition) {
-        return null;
-    }
-
-    @Override
-    public int getGroupCount() {
-        return groupItem.size();
-    }
-
-    @Override
-    public void onGroupCollapsed(int groupPosition) {
-        super.onGroupCollapsed(groupPosition);
-    }
-
-    @Override
-    public void onGroupExpanded(int groupPosition) {
-        super.onGroupExpanded(groupPosition);
-    }
-
-    @Override
-    public long getGroupId(int groupPosition) {
-        return 0;
-    }
-
-    @Override
-    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = minflater.inflate(R.layout.tableview_group_supportpage, null);
-        }
-        //ImageView imageView = (ImageView) convertView.findViewById(R.id.tableView_groupImage_supportPage);
-        TextView textView = (TextView) convertView.findViewById(R.id.tableView_GroupTitle_SupportPage);
-
-        textView.setText(groupItem.get(groupPosition));
-        return convertView;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
-    }
-
-    @Override
-    public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
     }
 }

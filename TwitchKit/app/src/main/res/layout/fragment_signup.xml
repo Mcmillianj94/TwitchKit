@@ -14,6 +14,7 @@
         />
 
     <EditText
+        android:id="@+id/editText_signupfrag_username"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Username"
@@ -21,6 +22,7 @@
         android:layout_marginTop="32dp"/>
 
     <EditText
+        android:id="@+id/editText_signupfrag_password"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Password"
@@ -28,6 +30,7 @@
         android:layout_marginTop="16dp"/>
 
     <EditText
+        android:id="@+id/editText_signupfrag_reenterpass"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Re-enter Password"
@@ -35,6 +38,7 @@
         android:layout_marginTop="16dp"/>
 
     <EditText
+        android:id="@+id/editText_signupfrag_email"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Email"
@@ -42,6 +46,7 @@
         android:layout_marginTop="16dp"/>
 
     <Button
+        android:id="@+id/Button_signupFrag_submit"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"

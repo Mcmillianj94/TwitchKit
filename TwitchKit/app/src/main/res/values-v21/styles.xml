@@ -31,4 +31,13 @@
         <item name="android:textColorPrimary">@color/dirtyWhite</item>
         <item name="android:textColorHint">@color/tonedPurple</item>
     </style>
+
+    <style name="text_lightTheme">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textColorPrimary">@color/grey</item>
+        <item name="android:textColorHint">@color/tonedPurple</item>
+    </style>
 </resources>

@@ -3,10 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="mp.joshua.com.twitchkit.Activities.FormsActivity">
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 
-    <item android:id="@+id/action_streamerList" android:title="@string/action_streamerlist"
-        android:orderInCategory="100" app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_form"/>
+    <item
+        android:id="@+id/action_login"
+        android:title="Login"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_logout"
+        android:title="Logout"
+        app:showAsAction="never"/>
 </menu>

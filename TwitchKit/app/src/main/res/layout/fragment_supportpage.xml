@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/textView_supportFrag_instructions"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
@@ -21,8 +22,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <ExpandableListView
-            android:id="@+id/supportPage_expandList"
+        <ListView
+            android:id="@+id/supportPage_Listview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/supportFrag_continueToProfile"/>

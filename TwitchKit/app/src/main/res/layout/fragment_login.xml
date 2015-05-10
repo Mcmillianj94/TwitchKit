@@ -14,6 +14,7 @@
         />
 
     <EditText
+        android:id="@+id/editText_loginFrag_username"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Username"
@@ -21,6 +22,7 @@
         android:layout_marginTop="32dp"/>
 
     <EditText
+        android:id="@+id/editText_loginFrag_password"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="Password"
@@ -28,6 +30,7 @@
         android:layout_marginTop="16dp"/>
 
     <Button
+        android:id="@+id/button_loginFrag_login"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
@@ -35,6 +38,7 @@
         android:textColor="@color/grey"/>
 
     <Button
+        android:id="@+id/button_loginFrag_signup"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"

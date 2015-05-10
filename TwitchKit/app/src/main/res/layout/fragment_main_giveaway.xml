@@ -10,6 +10,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <TextView
+                android:id="@+id/textView_giveaway_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="21sp"
@@ -18,7 +19,9 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="8dp"
                 android:text="This is a test title for the giveaway"/>
+
             <TextView
+                android:id="@+id/textView_giveaway_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
@@ -33,7 +36,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -44,6 +46,7 @@
                     android:layout_marginEnd="4dp"/>
 
                 <TextView
+                    android:id="@+id/textView_giveaway_participantCount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="10000"
@@ -52,25 +55,6 @@
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="16dp"/>
             </LinearLayout>
-
-            <EditText
-                android:id="@+id/EditText_mainGiveaway_email"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:inputType="textEmailAddress"
-                android:hint="Email"/>
-
-            <EditText
-                android:id="@+id/EditText_mainGiveaway_userName"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:hint="Twitch Username"/>
 
             <Button
                 android:id="@+id/Button_mainGiveaway_pickWinner"
