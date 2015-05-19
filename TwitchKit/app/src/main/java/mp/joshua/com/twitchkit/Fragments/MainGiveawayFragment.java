@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -90,7 +91,8 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_CREATED);
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_RETRIEVED);
-        intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_DELETED);
+        intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_COMPLETED);
+        intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_ENTERED);
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR);
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
     }
@@ -160,7 +162,7 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
 
             switch (viewId){
                 case R.id.Button_mainGiveaway_submit:
-                    mParseSingleton.addGiveawayEntry(giveawayObject,ParseUser.getCurrentUser().getObjectId());
+                    mParseSingleton.addGiveawayEntry(giveawayObject,ParseUser.getCurrentUser());
                     break;
 
                 case R.id.Button_mainGiveaway_pickWinner:
@@ -200,7 +202,12 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
                     populateUI();
                     break;
 
-                case ConstantsLibrary.ACTION_GIVEAWAY_DELETED:
+                case ConstantsLibrary.ACTION_GIVEAWAY_ENTERED:
+                    Toast.makeText(getActivity(),"Entered, please check in later for winner",Toast.LENGTH_LONG).show();
+                    break;
+
+                case ConstantsLibrary.ACTION_GIVEAWAY_COMPLETED:
+                    //TODO: RELOAD DATA
                     break;
 
                 case ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR:

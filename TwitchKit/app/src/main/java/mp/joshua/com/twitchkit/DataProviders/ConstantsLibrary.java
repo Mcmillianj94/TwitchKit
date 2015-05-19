@@ -24,8 +24,9 @@ public class ConstantsLibrary {
 
     public static final String ACTION_GIVEAWAY_CREATED = "giveawayCreated";
     public static final String ACTION_GIVEAWAY_RETRIEVED = "giveawayRetrieved";
-    public static final String ACTION_GIVEAWAY_DELETED = "giveawayDeleted";
+    public static final String ACTION_GIVEAWAY_COMPLETED = "giveawayDeleted";
     public static final String ACTION_GIVEAWAY_DATAERROR = "giveawayDataError";
+    public static final String ACTION_GIVEAWAY_ENTERED = "giveawayEntered";
     public static final String ACTION_GIVEAWAY_WINNERS = " giveaway";
 
     public static final String ACTION_POLL_CREATED = "pollCreated";

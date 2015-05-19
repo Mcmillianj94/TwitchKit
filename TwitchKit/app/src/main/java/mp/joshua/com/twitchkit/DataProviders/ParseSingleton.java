@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
@@ -18,6 +17,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -237,38 +239,49 @@ public class ParseSingleton {
         });
     }
 
-    public void addGiveawayEntry(ParseObject giveawayObject, String ownerID){
-        ArrayList<Object> arrayList = null;
-        arrayList = (ArrayList<Object>)giveawayObject.getList("participants");
+    public void addGiveawayEntry(ParseObject giveawayObject,ParseUser participant){
 
-        boolean hasEntered = arrayList.contains(ownerID);
+        ArrayList<Object> participantsArray = (ArrayList<Object>)giveawayObject.getList("participants");
 
-        if (hasEntered){
-            //send data error user has already entered
-        }else if (!hasEntered){
-            arrayList.add(ownerID);
-            giveawayObject.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    Toast.makeText(mContext,"Entry Submitted Bihh", Toast.LENGTH_SHORT).show();
-                }
-            });
+        JSONObject winnerObject = new JSONObject();
+        try {
+            winnerObject.put("username",participant.getUsername());
+            winnerObject.put("email",participant.getEmail());
+            winnerObject.put("objectid",participant.getObjectId());
+        }catch (JSONException e){
+            e.printStackTrace();
         }
-    }
 
-    public void completeGiveaway(ParseObject giveawayObject, String winnerId){
-        ArrayList tempWinners = (ArrayList)giveawayObject.getList("winners");
+        participantsArray.add(winnerObject);
 
-        tempWinners.add(winnerId);
-
-        giveawayObject.put("winners",tempWinners);
         giveawayObject.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e == null){
-
+                if(e == null){
+                    Intent enteredIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_ENTERED);
+                    mContext.sendBroadcast(enteredIntent);
                 }else {
-                    e.printStackTrace();
+
+                }
+            }
+        });
+    }
+
+    public void completeGiveaway(ParseObject giveawayObject,ParseUser participant){
+
+        ArrayList<Object> winnersArray = (ArrayList<Object>)giveawayObject.getList("winners");
+
+        //Set giveaway to inactive
+        giveawayObject.put("active",false);
+
+        giveawayObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null){
+                    Intent completeIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_COMPLETED);
+                    mContext.sendBroadcast(completeIntent);
+                }else {
+
                 }
             }
         });
