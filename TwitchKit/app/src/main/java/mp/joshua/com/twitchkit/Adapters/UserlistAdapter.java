@@ -3,12 +3,12 @@ package mp.joshua.com.twitchkit.Adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckedTextView;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
@@ -25,8 +25,7 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
 
     public ArrayList<String> groupItem;
 
-    public List tempChild;
-    public ArrayList<Object> Childtem = new ArrayList<Object>();
+    public ArrayList<Object> childitem;
 
     public LayoutInflater minflater;
     public Activity activity;
@@ -35,8 +34,7 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
     public UserlistAdapter(Context context, ArrayList<String> grList, ArrayList<Object> childItem) {
         mContext = context;
         groupItem = grList;
-        Childtem = childItem;
-        Log.d("TestAdapter", "" + childItem.size());
+        childitem = childItem;
     }
 
     public void setInflater(LayoutInflater mInflater, Activity act) {
@@ -55,12 +53,11 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int groupPosition, final int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        tempChild = ((List)Childtem.get(groupPosition));
+    public View getChildView(final int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        List tempChild = ((List) childitem.get(groupPosition));
         TextView text = null;
 
         final ParseUser currentChild = (ParseUser)tempChild.get(childPosition);
-        Log.d("TestAdapter", currentChild.getObjectId());
 
         if (convertView == null) {
             convertView = minflater.inflate(R.layout.tableview_child_userlist, null);
@@ -68,11 +65,13 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
         text = (TextView) convertView.findViewById(R.id.textView1);
         text.setText(currentChild.getUsername());
 
+
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 intent.putExtra(ConstantsLibrary.EXTRA_PARSEUSER_ID, currentChild.getObjectId());
+                intent.putExtra(ConstantsLibrary.EXTRA_FOLLOWING_STATUS, groupPosition);
                 mContext.startActivity(intent);
             }
         });
@@ -81,7 +80,7 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return ((ArrayList<Object>)Childtem.get(groupPosition)).size();
+        return ((List) childitem.get(groupPosition)).size();
     }
 
     @Override
@@ -116,6 +115,7 @@ public class UserlistAdapter extends BaseExpandableListAdapter {
         }
         ((CheckedTextView) convertView).setText(groupItem.get(groupPosition));
         ((CheckedTextView) convertView).setChecked(isExpanded);
+        ((ExpandableListView)parent).expandGroup(groupPosition);
         return convertView;
     }
 

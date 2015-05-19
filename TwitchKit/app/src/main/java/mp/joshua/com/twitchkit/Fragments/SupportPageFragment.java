@@ -44,7 +44,6 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
 
     FragmentManager fragmentManager;
     private String mCurrentActivity;
-    private boolean didSaveSupportLink;
     private String ownerID;
 
     Bundle recievedArgs;
@@ -87,7 +86,7 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_frag_profile,menu);
+        inflater.inflate(R.menu.menu_frag_forms,menu);
 
         if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
             menu.findItem(R.id.action_add).setVisible(false);
@@ -122,14 +121,8 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
 
         if (recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
             textView.setVisibility(View.GONE);
-            continueButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getActivity().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.container,ProfileFragment.newInstance())
-                            .commit();
-                }
-            });
+            continueButton.setOnClickListener(continueClickListener);
+
         }else if(recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
             continueButton.setVisibility(View.GONE);
         }
@@ -204,7 +197,7 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
-                    didSaveSupportLink = mParseSingleton.createSupportLink(
+                    mParseSingleton.createSupportLink(
                             lTitle.getText().toString(),
                             lURL.getText().toString(),
                             lPicture.getText().toString());
@@ -247,4 +240,13 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
         builder.setNegativeButton("Cancel", null);
         builder.show();
     }
+
+    View.OnClickListener continueClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container,ProfileFragment.newInstance(ownerID))
+                    .commit();
+        }
+    };
 }

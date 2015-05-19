@@ -11,26 +11,25 @@ import android.widget.TextView;
 
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
 
-public class CoverViewFactory {
+public class CoverView {
 
     Activity mActivity;
-    RelativeLayout viewHolder;
+    RelativeLayout coverViewHolder;
     RelativeLayout background;
     RelativeLayout.LayoutParams params;
-    String mCoverType;
 
-    public CoverViewFactory(Activity context){
-        mActivity = context; //ConstantsLibrary
+   public CoverView(Activity context, RelativeLayout v){
+       mActivity = context;
+       coverViewHolder = v;
+       background = new RelativeLayout(mActivity);
+       background.setLayoutParams(new LinearLayout.LayoutParams(
+               LinearLayout.LayoutParams.MATCH_PARENT,
+               LinearLayout.LayoutParams.MATCH_PARENT));
+       background.setBackgroundResource(R.color.dirtyWhite);
 
-        background = new RelativeLayout(mActivity);
-        background.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT));
-        background.setBackgroundResource(R.color.dirtyWhite);
-
-        params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-    }
+       params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+       params.addRule(RelativeLayout.CENTER_IN_PARENT);
+   }
 
     public void createLoadingCover(){
 
@@ -45,6 +44,7 @@ public class CoverViewFactory {
     public void createInstructionCover(int messageCode, String currentActivity){
 
         String message = "";
+
         switch (messageCode){
             case ConstantsLibrary.CONST_USERLIST_MESSAGE:
                 message = "Sign in to follow streamers. Streamers being followed will show here";
@@ -56,7 +56,6 @@ public class CoverViewFactory {
                 }else if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
                     message = "There is no active giveaway at this time";
                 }
-
                 break;
 
 
@@ -69,9 +68,16 @@ public class CoverViewFactory {
                 break;
 
             case ConstantsLibrary.CONST_QUERY_ERROR_MESSAGE:
-                message = "Data could not be retrieved at this time.";
+                message = "Data could not be retrieved at this time";
+                break;
 
+            case ConstantsLibrary.CONST_TWITTERFEED_NULL_MESSAGE:
+                message = "User doesn't have a twitter linked";
+                break;
 
+            case ConstantsLibrary.CONST_USER_NULL_MESSAGE:
+                message = "You must be signed in to access this content";
+                break;
         }
 
         TextView instructionView = new TextView(mActivity);
@@ -86,12 +92,11 @@ public class CoverViewFactory {
     }
 
     public void coverpage(View coverView){
-        viewHolder = (RelativeLayout)mActivity.findViewById(R.id.pollContainer);
-        viewHolder.addView(coverView);
+        coverViewHolder.addView(coverView);
     }
 
     public void removeCoverView(){
         background.removeAllViews();
-        viewHolder.removeView(background);
+        coverViewHolder.removeView(background);
     }
 }

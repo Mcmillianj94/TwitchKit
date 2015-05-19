@@ -17,8 +17,9 @@ import mp.joshua.com.twitchkit.R;
 
 public class ProfileActivity extends ActionBarActivity {
 
-    ParseSingleton mParseSingleton;
-    public String parseUserID;
+    public static String parseUserID;
+
+    private ParseSingleton mParseSingleton;
     Toolbar toolbar;
 
     @Override
@@ -41,7 +42,7 @@ public class ProfileActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_act_profile,menu);
+        getMenuInflater().inflate(R.menu.menu_activities,menu);
         mParseSingleton.reloadOptionsMenu(menu);
         return true;
     }
@@ -62,6 +63,6 @@ public class ProfileActivity extends ActionBarActivity {
         }else if (id == R.id.action_logout){
             mParseSingleton.logUserOut(ProfileActivity.this);
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 }

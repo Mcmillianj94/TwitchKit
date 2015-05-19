@@ -2,41 +2,40 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/grey">
-
-    <include
-        android:id="@+id/tool_bar"
-        layout="@layout/tool_bar"
-        />
+    android:background="@color/grey"
+    android:id="@+id/container">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical" android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey"
-        android:theme="@style/Text_DarkTheme">
+        android:background="@color/grey">
 
-        <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
+        <com.loopj.android.image.SmartImageView
+            android:id="@+id/smartImage_settingsAct_profilePic"
+            android:layout_width="144dp"
+            android:layout_height="144dp"
             android:layout_gravity="center"
-            android:background="@color/tonedPurple"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Twitter Username"/>
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:hint="Bio"/>
+            android:layout_margin="16dp"
+            android:background="@color/dirtyWhite"
+            android:theme="@style/Widget.AppCompat.Light.ActionButton"/>
 
         <Button
+            android:id="@+id/button_settings_bio"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="Save"/>
+            android:text="Change Bio"
+            android:theme="@style/Widget.AppCompat.ActionButton.Overflow"
+            android:padding="16dp"
+            android:gravity="start"/>
+
+        <Button
+            android:id="@+id/button_settings_twitter"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Twitter Name"
+            android:theme="@style/Widget.AppCompat.ActionButton.Overflow"
+            android:padding="16dp"
+            android:gravity="start"/>
+
     </LinearLayout>
-
-
-
-
 </LinearLayout>

@@ -1,6 +1,8 @@
 package mp.joshua.com.twitchkit.Activities;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +15,7 @@ import android.view.MenuItem;
 
 import com.parse.Parse;
 import com.parse.ParseUser;
+import com.parse.ui.ParseLoginActivity;
 import com.parse.ui.ParseLoginBuilder;
 
 import java.util.ArrayList;
@@ -37,7 +40,6 @@ public class MainActivity extends ActionBarActivity {
 
 
         Parse.enableLocalDatastore(this);
-
         Parse.initialize(this, "Dqd3nKnC4IGhqRkcsw8ylQXcQUkGq0dJMyDIJgPo", "gXnQrBFy2viRiSixadRPTmYBDYI7lqkIx6iDWzUx");
 
         parseSingleton = ParseSingleton.getInstance(MainActivity.this);
@@ -73,20 +75,28 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int actionId = item.getItemId();
 
-        if (actionId == R.id.action_forms){
-           Intent intent = new Intent(MainActivity.this, FormsActivity.class);
-           startActivity(intent);
-
-        }else if (actionId == R.id.action_settings){
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-
-        }else if (actionId == R.id.action_login){
-            ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
-            startActivityForResult(builder.build(),0);
-
-        }else if (actionId == R.id.action_logout){
-            parseSingleton.logUserOut(MainActivity.this);
+        switch (actionId){
+            case R.id.action_forms:
+                if (ParseUser.getCurrentUser() != null){
+                    Intent intent = new Intent(MainActivity.this, FormsActivity.class);
+                    startActivity(intent);
+                }else {
+                    showLoginNotification();
+                }
+                break;
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_login:
+                ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
+                startActivityForResult(builder.build(),0);
+                break;
+            case R.id.action_logout:
+                parseSingleton.logUserOut(MainActivity.this);
+                Intent loggedOutIntent = new Intent(ConstantsLibrary.ACTION_LOGGED_OUT);
+                sendBroadcast(loggedOutIntent);
+                break;
         }
         return true;
     }
@@ -131,11 +141,28 @@ public class MainActivity extends ActionBarActivity {
         }
     };
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
+    private void showLoginNotification(){
+        if (ParseUser.getCurrentUser() == null){
+            AlertDialog.Builder loginAlert = new AlertDialog.Builder(MainActivity.this);
+            loginAlert.setTitle("Login");
+            loginAlert.setMessage("You must be logged in to access this screen.");
 
+            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent loginIntent = new Intent(MainActivity.this, ParseLoginActivity.class);
+                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
+                    startActivity(loginIntent);
+                }
+            });
+
+            loginAlert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            loginAlert.show();
         }
     }
 }

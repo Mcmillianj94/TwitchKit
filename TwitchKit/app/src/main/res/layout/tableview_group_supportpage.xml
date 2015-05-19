@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextView
-       android:id="@+id/tableView_GroupTitle_SupportPage"
+       android:id="@+id/textView_supportPage_title"
         android:layout_width="match_parent"
         android:layout_height="80dp"
         android:gravity="center_vertical"
@@ -17,8 +17,8 @@
         android:textStyle="bold"
         android:background="@color/darkPurple"/>
 
-    <ImageView
-        android:id="@+id/tableView_groupImage_supportPage"
+    <com.loopj.android.image.SmartImageView
+        android:id="@+id/smartImage_supportPage_image"
         android:layout_width="match_parent"
         android:layout_height="80dp" />
 

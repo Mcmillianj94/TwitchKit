@@ -13,6 +13,7 @@ import com.parse.DeleteCallback;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -54,6 +55,9 @@ public class ParseSingleton {
 
     public void getAllStreamerList(){
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+        if (ParseUser.getCurrentUser() != null){
+            query.whereNotEqualTo("objectId", ParseUser.getCurrentUser().getObjectId());
+        }
         query.findInBackground(new FindCallback<ParseUser>() {
             public void done(List<ParseUser> scoreList, ParseException e) {
                 if (e == null) {
@@ -72,8 +76,21 @@ public class ParseSingleton {
         });
     }
 
-    public void getFollowing(){
+    public void getUser(String userID){
         ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("objectId",userID);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> parseUsers, ParseException e) {
+                if (e == null){
+                    mDataPostOffice.setProfileOwner(parseUsers.get(0));
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_PROFILE_OWNER_RETRIEVED);
+                    mContext.sendBroadcast(intent);
+                }else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void reloadOptionsMenu(Menu menu){
@@ -180,6 +197,7 @@ public class ParseSingleton {
         giveaway.put("message",message);
         giveaway.put("active", true);
         giveaway.put("participants", new ArrayList<>());
+        giveaway.put("winners", new ArrayList<>());
         giveaway.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -196,15 +214,23 @@ public class ParseSingleton {
     public void getGiveaway(String ownerId){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Giveaway");
         query.whereEqualTo("owner", ownerId);
+        query.setLimit(6);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
-                    if (list.size() > 0){
+                    if (list.size() > 0) {
                         mDataPostOffice.setGiveawayObject(list.get(0));
                         Intent giveawayRetrievedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_RETRIEVED);
                         mContext.sendBroadcast(giveawayRetrievedIntent);
+                    } else {
+                        Intent intent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR);
+                        intent.putExtra(ConstantsLibrary.EXTRA_ERROR_TYPE, ConstantsLibrary.EXTRA_ERRORTYPE_NULL);
+                        mContext.sendBroadcast(intent);
                     }
                 } else {
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR);
+                    intent.putExtra(ConstantsLibrary.EXTRA_ERROR_TYPE, ConstantsLibrary.EXTRA_ERRORTYPE_QUERY);
+                    mContext.sendBroadcast(intent);
                     e.printStackTrace();
                 }
             }
@@ -218,8 +244,7 @@ public class ParseSingleton {
         boolean hasEntered = arrayList.contains(ownerID);
 
         if (hasEntered){
-            Toast.makeText(mContext,"Entry Not Submitted Bihh", Toast.LENGTH_SHORT).show();
-
+            //send data error user has already entered
         }else if (!hasEntered){
             arrayList.add(ownerID);
             giveawayObject.saveInBackground(new SaveCallback() {
@@ -229,6 +254,24 @@ public class ParseSingleton {
                 }
             });
         }
+    }
+
+    public void completeGiveaway(ParseObject giveawayObject, String winnerId){
+        ArrayList tempWinners = (ArrayList)giveawayObject.getList("winners");
+
+        tempWinners.add(winnerId);
+
+        giveawayObject.put("winners",tempWinners);
+        giveawayObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+
+                }else {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     public void createPoll(String ownerID, String title,ArrayList<String> optionsList){
@@ -285,24 +328,19 @@ public class ParseSingleton {
 
         boolean hasEntered = participantList.contains(userID);
 
-        if (hasEntered){
-            Toast.makeText(mContext,"NOPE", Toast.LENGTH_SHORT).show();
-
-        }else if (!hasEntered){
-            voteList.add(vote);
-            participantList.add(userID);
-            pollObject.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null){
-                        Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_USERVOTED);
-                        mContext.sendBroadcast(intent);
-                    }else{
-                        e.printStackTrace();
-                    }
+        voteList.add(vote);
+        participantList.add(userID);
+        pollObject.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_USERVOTED);
+                    mContext.sendBroadcast(intent);
+                }else{
+                    e.printStackTrace();
                 }
-            });
-        }
+            }
+        });
     }
 
     public void deletePollObject(ParseObject pollObject){
@@ -312,6 +350,63 @@ public class ParseSingleton {
                 if (e == null){
                     Intent intent = new Intent(ConstantsLibrary.ACTION_POLL_DELETED);
                     mContext.sendBroadcast(intent);
+                }else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void editPorfile(ParseUser parseUser, String property, Object value){
+        parseUser.put(property,value);
+        parseUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_SETTING_CHANGED);
+                    mContext.sendBroadcast(intent);
+                }else{
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void editProfilePicture(final ParseUser parseUser, byte[] bytes){
+        //Save image to parse
+        final ParseFile file = new ParseFile("profilePic.png", bytes);
+        file.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+                    //Sens data to edit profile func to be save to user
+                    editPorfile(parseUser,"profileImage",file);
+                }else {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void followUser(ParseUser currentUser, String profileOwnerID){
+
+        List tempList = currentUser.getList("following");
+        ArrayList followers;
+        if (tempList == null){
+            followers = new ArrayList();
+        }else {
+            followers = (ArrayList)tempList;
+        }
+        followers.add(profileOwnerID);
+
+        currentUser.put("following",followers);
+
+        currentUser.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null){
+                    Intent followedIntent = new Intent(ConstantsLibrary.ACTION_PROFILE_OWNER_FOLLOWED);
+                    mContext.sendBroadcast(followedIntent);
                 }else {
                     e.printStackTrace();
                 }

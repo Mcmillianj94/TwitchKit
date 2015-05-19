@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.loopj.android.image.SmartImageView;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
@@ -47,7 +48,10 @@ public class SupportPageAdapter extends BaseAdapter {
         ParseObject current = (ParseObject)supportLinksArray.get(position);
 
         convertView.setTag(current.get("link"));
-        ((TextView)convertView.findViewById(R.id.tableView_GroupTitle_SupportPage)).setText(current.getString("title"));
+        ((TextView)convertView.findViewById(R.id.textView_supportPage_title)).setText(current.getString("title"));
+        SmartImageView image = (SmartImageView)convertView.findViewById(R.id.smartImage_supportPage_image);
+        image.setImageUrl(current.getString("image"));
+
         return convertView;
     }
 }

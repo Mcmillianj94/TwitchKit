@@ -22,6 +22,8 @@ public class DataPostOffice {
     private ParseObject giveawayObject;
     private ParseObject pollObject;
 
+    private ParseUser profileOwner;
+
 
     protected DataPostOffice() {
         // Exists only to defeat instantiation.
@@ -60,8 +62,8 @@ public class DataPostOffice {
     }
 
     //GiveawayObject
-    public void setGiveawayObject(ParseObject recievedObject){
-        this.giveawayObject = recievedObject;
+    public void setGiveawayObject(ParseObject object){
+        this.giveawayObject = object;
     }
     public ParseObject getGiveawayObject(){
         return giveawayObject;
@@ -69,10 +71,17 @@ public class DataPostOffice {
 
     //GiveawayObject
     public void setPollObject(ParseObject recievedObject){
-        this.giveawayObject = recievedObject;
+        this.pollObject = recievedObject;
     }
     public ParseObject getPollObject(){
-        return giveawayObject;
+        return pollObject;
+    }
+
+    public void setProfileOwner(ParseUser parseUser){
+        profileOwner = parseUser;
+    }
+    public ParseUser getProfileOwner(){
+        return profileOwner;
     }
 
 }

@@ -1,8 +1,5 @@
 package mp.joshua.com.twitchkit.Activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -15,7 +12,6 @@ import android.view.MenuItem;
 
 import com.astuetz.PagerSlidingTabStrip;
 import com.parse.ParseUser;
-import com.parse.ui.ParseLoginActivity;
 import com.parse.ui.ParseLoginBuilder;
 
 import java.util.ArrayList;
@@ -50,7 +46,6 @@ public class FormsActivity extends ActionBarActivity {
 
         parseSingleton = ParseSingleton.getInstance(FormsActivity.this);
         mDataPostOffice = DataPostOffice.getInstance(FormsActivity.this);
-        showLoginNotification();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -101,31 +96,6 @@ public class FormsActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void showLoginNotification(){
-        if (ParseUser.getCurrentUser() == null){
-            AlertDialog.Builder loginAlert = new AlertDialog.Builder(FormsActivity.this);
-            loginAlert.setTitle("Login");
-            loginAlert.setMessage("You must be logged in to access this screen.");
-
-            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent loginIntent = new Intent(FormsActivity.this, ParseLoginActivity.class);
-                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
-                    startActivity(loginIntent);
-                }
-            });
-
-            loginAlert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            loginAlert.show();
-        }
     }
 
     public class SectionsPagerAdapter extends FragmentPagerAdapter {

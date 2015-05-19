@@ -24,8 +24,8 @@ dependencies {
     compile 'com.h6ah4i.android.widget.advrecyclerview:advrecyclerview:0.6.2'
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.jpardogo.materialtabstrip:library:1.0.9'
-    compile 'com.parse.bolts:bolts-android:1.+'
     compile fileTree(dir: 'libs', include: 'Parse-*.jar')
     compile files('libs/Parse-1.9.1.jar')
     compile project(':ParseLoginUI')
+    compile files('libs/android-smart-image-view-1.0.0.jar')
 }

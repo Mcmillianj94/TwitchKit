@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
+    android:id="@+id/relative_profileFrag_viewHolder"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/linearLayout_profileFrag_profInfo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/tonedPurple">
 
-        <ImageView
-            android:layout_width="88dp"
-            android:layout_height="88dp"
-            android:background="@color/grey"
-            android:layout_margin="8dp"/>
+        <com.loopj.android.image.SmartImageView
+            android:id="@+id/smartImage_profileFrag_profilePic"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_margin="8dp"
+            android:background="@color/grey"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,32 +26,48 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/textView_profileFrag_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="BigGritz904"
-                android:textSize="18sp"/>
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                android:textSize="20sp"
+                android:lines="1"/>
 
             <TextView
+                android:id="@+id/textView_profileFrag_bio"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:text="BigGritz904"
+                android:layout_height="match_parent"
+                android:layout_margin="4dp"
+                android:ellipsize="none"
+                android:scrollHorizontally="false"
+                android:lines="3"
                 android:textSize="18sp"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <com.astuetz.PagerSlidingTabStrip
-        android:id="@+id/tabs"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/tonedPurple"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/dirtyWhite"
+        android:layout_below="@+id/linearLayout_profileFrag_profInfo">
 
-    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/pager"
-        android:layout_width="match_parent" android:layout_height="match_parent"
-        tools:context="mp.joshua.com.twitchkit.Activities.FormsActivity" />
+        <com.astuetz.PagerSlidingTabStrip
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/tonedPurple"/>
 
-</LinearLayout>
+        <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/pager"
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            tools:context="mp.joshua.com.twitchkit.Activities.FormsActivity" />
+
+    </LinearLayout>
+
+</RelativeLayout>
