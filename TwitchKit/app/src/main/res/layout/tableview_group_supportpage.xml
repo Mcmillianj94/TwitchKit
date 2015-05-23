@@ -20,6 +20,7 @@
     <com.loopj.android.image.SmartImageView
         android:id="@+id/smartImage_supportPage_image"
         android:layout_width="match_parent"
-        android:layout_height="80dp" />
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"/>
 
 </RelativeLayout>

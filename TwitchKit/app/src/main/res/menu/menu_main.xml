@@ -6,10 +6,6 @@
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
 
-    <item android:id="@+id/action_forms" android:title="@string/action_form"
-        android:orderInCategory="100" app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_form"/>
-
     <item android:id="@+id/action_search"
         android:title="@string/action_search"
         app:showAsAction="collapseActionView|always"

@@ -83,6 +83,11 @@ public class MainPollFragment extends Fragment {
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         coverView.removeCoverView();
     }
 

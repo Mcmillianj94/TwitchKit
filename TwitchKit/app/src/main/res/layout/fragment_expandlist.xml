@@ -9,6 +9,16 @@
     <ExpandableListView
         android:id="@+id/expand_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/button_userList_streamerTools"/>
+
+    <Button
+        android:id="@+id/button_userList_streamerTools"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:text="Streamer Tools"
+        android:background="@color/tonedPurple"
+        android:elevation="4dp"/>
 
 </RelativeLayout>

@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,6 +26,7 @@ import com.loopj.android.image.SmartImageView;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import mp.joshua.com.twitchkit.CoverView;
@@ -107,12 +109,18 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.menu_frag_profile,menu);
+        if (ParseUser.getCurrentUser() != null){
+            inflater.inflate(R.menu.menu_frag_profile,menu);
+        }
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
+        if (profileOwner != null){
+            populateToolBar(menu);
+            Log.d("GritzTest", "this junk work");
+        }
     }
 
     @Override
@@ -120,11 +128,11 @@ public class ProfileFragment extends Fragment {
         int itemId = item.getItemId();
 
 
-        if (itemId == R.id.action_not_favorited){
+        if (itemId == R.id.action_not_followed){
             //Add profileOwner to current users following list
             mParseSigleton.followUser(ParseUser.getCurrentUser(),profileOwner.getObjectId());
-        }else if (itemId == R.id.action_favorited){
-
+        }else if (itemId == R.id.action_followed){
+            mParseSigleton.unFollowUser(ParseUser.getCurrentUser(),profileOwner.getObjectId());
         }
         return true;
     }
@@ -191,6 +199,10 @@ public class ProfileFragment extends Fragment {
                     Toast.makeText(getActivity(),"Followed that mutha",Toast.LENGTH_SHORT).show();
                     //TODO: Update toolbar from follow to unfollow
                     break;
+                case ConstantsLibrary.ACTION_PROFILE_QUERY_ERROR:
+                    mCoverView.removeCoverView();
+                    mCoverView.createInstructionCover(ConstantsLibrary.CONST_QUERY_ERROR_MESSAGE,null);
+                    break;
             }
         }
     };
@@ -204,6 +216,8 @@ public class ProfileFragment extends Fragment {
     }
 
     public void populateUI(){
+
+        getActivity().invalidateOptionsMenu();
 
         //Get profile image - Set smartImageViewUrl to image url
         ParseFile image = profileOwner.getParseFile("profileImage");
@@ -222,5 +236,19 @@ public class ProfileFragment extends Fragment {
 
         //Remove coverView once UI elements are successfully populated
         mCoverView.removeCoverView();
+    }
+
+    private void populateToolBar(Menu menu){
+        MenuItem followItem = menu.findItem(R.id.action_not_followed);
+        MenuItem unFollowItem = menu.findItem(R.id.action_followed);
+        ArrayList followingList = (ArrayList)ParseUser.getCurrentUser().getList("following");
+
+        if (followingList.contains(profileOwner.getObjectId())){
+            followItem.setVisible(false);
+            unFollowItem.setVisible(true);
+        }else {
+            followItem.setVisible(true);
+            unFollowItem.setVisible(false);
+        };
     }
 }

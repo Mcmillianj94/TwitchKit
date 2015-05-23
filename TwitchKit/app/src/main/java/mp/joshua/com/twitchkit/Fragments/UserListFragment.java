@@ -1,8 +1,10 @@
 package mp.joshua.com.twitchkit.Fragments;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
@@ -11,13 +13,16 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.RelativeLayout;
 
 import com.parse.ParseUser;
+import com.parse.ui.ParseLoginActivity;
 
 import java.util.ArrayList;
 
+import mp.joshua.com.twitchkit.Activities.FormsActivity;
 import mp.joshua.com.twitchkit.Adapters.UserlistAdapter;
 import mp.joshua.com.twitchkit.CoverView;
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
@@ -31,6 +36,7 @@ public class UserListFragment extends Fragment {
     DataPostOffice mDataPostOffice;
     ExpandableListView expandList;
     RelativeLayout viewHolder;
+    Button streamerToolButton;
     CoverView mCoverView;
 
     boolean hasPaused = false;
@@ -86,6 +92,9 @@ public class UserListFragment extends Fragment {
         expandList.setGroupIndicator(Drawable.createFromPath(String.valueOf(R.drawable.ic_launcher)));
         expandList.setBackgroundColor(getResources().getColor(R.color.dirtyWhite));
         expandList.setClickable(true);
+
+        streamerToolButton = (Button)v.findViewById(R.id.button_userList_streamerTools);
+        streamerToolButton.setOnClickListener(streamerToolsClickListener);
         return v;
     }
 
@@ -163,5 +172,37 @@ public class UserListFragment extends Fragment {
 
         expandList.setAdapter(mNewAdapter);
         mCoverView.removeCoverView();
+    }
+
+    View.OnClickListener streamerToolsClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (ParseUser.getCurrentUser() != null){
+                Intent intent = new Intent(getActivity(), FormsActivity.class);
+                startActivity(intent);
+            }else {
+                showLoginNotification();
+            }
+        }
+    };
+
+    private void showLoginNotification(){
+        if (ParseUser.getCurrentUser() == null){
+            AlertDialog.Builder loginAlert = new AlertDialog.Builder(getActivity());
+            loginAlert.setTitle("Login");
+            loginAlert.setMessage("You must be logged in to access this screen.");
+
+            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent loginIntent = new Intent(getActivity(), ParseLoginActivity.class);
+                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
+                    startActivity(loginIntent);
+                }
+            });
+
+            loginAlert.setNegativeButton("Close",null);
+            loginAlert.show();
+        }
     }
 }

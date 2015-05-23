@@ -1,8 +1,6 @@
 package mp.joshua.com.twitchkit.Activities;
 
-import android.app.AlertDialog;
 import android.app.FragmentManager;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,7 +13,6 @@ import android.view.MenuItem;
 
 import com.parse.Parse;
 import com.parse.ParseUser;
-import com.parse.ui.ParseLoginActivity;
 import com.parse.ui.ParseLoginBuilder;
 
 import java.util.ArrayList;
@@ -76,14 +73,6 @@ public class MainActivity extends ActionBarActivity {
         int actionId = item.getItemId();
 
         switch (actionId){
-            case R.id.action_forms:
-                if (ParseUser.getCurrentUser() != null){
-                    Intent intent = new Intent(MainActivity.this, FormsActivity.class);
-                    startActivity(intent);
-                }else {
-                    showLoginNotification();
-                }
-                break;
             case R.id.action_settings:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
@@ -140,29 +129,4 @@ public class MainActivity extends ActionBarActivity {
             return false;
         }
     };
-
-    private void showLoginNotification(){
-        if (ParseUser.getCurrentUser() == null){
-            AlertDialog.Builder loginAlert = new AlertDialog.Builder(MainActivity.this);
-            loginAlert.setTitle("Login");
-            loginAlert.setMessage("You must be logged in to access this screen.");
-
-            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent loginIntent = new Intent(MainActivity.this, ParseLoginActivity.class);
-                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
-                    startActivity(loginIntent);
-                }
-            });
-
-            loginAlert.setNegativeButton("Close", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    finish();
-                }
-            });
-            loginAlert.show();
-        }
-    }
 }

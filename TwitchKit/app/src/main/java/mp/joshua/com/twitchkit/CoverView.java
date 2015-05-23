@@ -27,12 +27,11 @@ public class CoverView {
                LinearLayout.LayoutParams.MATCH_PARENT));
        background.setBackgroundResource(R.color.dirtyWhite);
 
-       params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+       params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
        params.addRule(RelativeLayout.CENTER_IN_PARENT);
    }
 
     public void createLoadingCover(){
-
         ProgressBar progressBar = new ProgressBar(mActivity, null, android.R.attr.progressBarStyleLarge);
         progressBar.setBackgroundColor(mActivity.getResources().getColor(R.color.dirtyWhite));
         progressBar.setLayoutParams(params);

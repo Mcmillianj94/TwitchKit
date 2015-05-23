@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/viewHolderGive">
-    <ScrollView
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/linearLayout_giveawayFrag_winnersList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/darkPurple"
+        android:orientation="vertical"/>
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/linearLayout_giveawayFrag_winnersList"
+        android:id="@+id/viewHolderGive">
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -15,6 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="21sp"
+                android:maxLines="2"
                 android:layout_marginTop="8dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
@@ -25,6 +37,7 @@
                 android:id="@+id/textView_giveaway_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:maxLines="8"
                 android:textSize="18sp"
                 android:text="In the era smiles the reasonable radio. The reactionary subway studies. The shared communist shies away near the sole degenerate. Will her joking address calculate? The conjecture pops underneath the paranoid. Your lover clicks."
                 android:layout_marginStart="16dp"
@@ -68,16 +81,6 @@
                 android:textColor="@color/grey"/>
 
             <Button
-                android:id="@+id/Button_mainGiveaway_prevWinners"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Previous Winners"
-                android:textColor="@color/grey"/>
-
-            <Button
                 android:id="@+id/Button_mainGiveaway_submit"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -87,5 +90,5 @@
                 android:text="Submit"
                 android:textColor="@color/grey"/>
         </LinearLayout>
-    </ScrollView>
+    </RelativeLayout>
 </RelativeLayout>

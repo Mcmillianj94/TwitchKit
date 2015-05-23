@@ -22,7 +22,10 @@ public class ConstantsLibrary {
 
     public static final String ACTION_GET_SUPPORTLINKS = "actionGetSupportLinks";
 
+    public static final String ACTION_PROFILE_QUERY_ERROR = "profileQueryError";
+
     public static final String ACTION_GIVEAWAY_CREATED = "giveawayCreated";
+    public static final String ACTION_GIVEAWAY_ALREADYACTIVE = "giveawayIsActive";
     public static final String ACTION_GIVEAWAY_RETRIEVED = "giveawayRetrieved";
     public static final String ACTION_GIVEAWAY_COMPLETED = "giveawayDeleted";
     public static final String ACTION_GIVEAWAY_DATAERROR = "giveawayDataError";

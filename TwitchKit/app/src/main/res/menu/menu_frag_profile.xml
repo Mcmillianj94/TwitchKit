@@ -2,15 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_favorited"
+        android:id="@+id/action_followed"
         android:title="Favorite"
         android:icon="@drawable/ic_favorited"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
 
     <item
-        android:id="@+id/action_not_favorited"
+        android:id="@+id/action_not_followed"
         android:title="Favorite"
         android:icon="@drawable/ic_not_favorited"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
 
 </menu>

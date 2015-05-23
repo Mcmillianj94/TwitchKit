@@ -3,20 +3,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView_supportFrag_instructions"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:textSize="18sp"
-        android:textColor="@color/grey"
-        android:text="You do not have any Support Links added. Tap the + at the top to add a Support Link"/>
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"

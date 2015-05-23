@@ -21,7 +21,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -113,14 +112,12 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
 
         recievedArgs = getArguments();
         continueButton = (Button)getView().findViewById(R.id.supportFrag_continueToProfile);
-        TextView textView = (TextView)getView().findViewById(R.id.textView_supportFrag_instructions);
 
         supportLinkListView = (ListView)getView().findViewById(R.id.supportPage_Listview);
         supportLinkListView.setOnItemClickListener(onItemClickListener);
         supportLinkListView.setOnItemLongClickListener(onItemLongClickListener);
 
         if (recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
-            textView.setVisibility(View.GONE);
             continueButton.setOnClickListener(continueClickListener);
 
         }else if(recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
@@ -144,8 +141,6 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
             if (supportLinksArray != null){
                 SupportPageAdapter adapter = new SupportPageAdapter(getActivity(),supportLinksArray);
                 supportLinkListView.setAdapter(adapter);
-                TextView textView = (TextView)getView().findViewById(R.id.textView_supportFrag_instructions);
-                textView.setVisibility(View.GONE);
             }else {
                 AlertDialog.Builder alert = new AlertDialog.Builder(getActivity())
                         .setMessage("Data could not be retrieved")

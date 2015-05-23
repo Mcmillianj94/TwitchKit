@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import mp.joshua.com.twitchkit.R;
@@ -89,6 +90,8 @@ public class ParseSingleton {
                     Intent intent = new Intent(ConstantsLibrary.ACTION_PROFILE_OWNER_RETRIEVED);
                     mContext.sendBroadcast(intent);
                 }else {
+                    Intent intent = new Intent(ConstantsLibrary.ACTION_PROFILE_QUERY_ERROR);
+                    mContext.sendBroadcast(intent);
                     e.printStackTrace();
                 }
             }
@@ -192,31 +195,42 @@ public class ParseSingleton {
         });
     }
 
-    public void createGiveaway(String ownerId, String title, String message){
-        ParseObject giveaway = new ParseObject("Giveaway");
-        giveaway.put("owner", ownerId);
-        giveaway.put("title",title);
-        giveaway.put("message",message);
-        giveaway.put("active", true);
-        giveaway.put("participants", new ArrayList<>());
-        giveaway.put("winners", new ArrayList<>());
-        giveaway.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e ==  null){
-                    Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_CREATED);
-                    mContext.sendBroadcast(giveawayCreatedIntent);
-                }else{
-                    e.printStackTrace();
+    public void createGiveaway(ParseObject giveawayObject, String ownerId, String title, String message){
+
+        if(giveawayObject == null){
+            giveawayObject = new ParseObject("Giveaway");
+            giveawayObject.put("winners",new ArrayList<>());
+        }
+
+        boolean isActive = giveawayObject.getBoolean("active");
+
+        if (isActive){
+            Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_ALREADYACTIVE);
+            mContext.sendBroadcast(giveawayCreatedIntent);
+        }else {
+            giveawayObject.put("owner", ownerId);
+            giveawayObject.put("title",title);
+            giveawayObject.put("message",message);
+            giveawayObject.put("active", true);
+            giveawayObject.put("participants", new ArrayList<>());
+
+            giveawayObject.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e ==  null){
+                        Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_CREATED);
+                        mContext.sendBroadcast(giveawayCreatedIntent);
+                    }else{
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     public void getGiveaway(String ownerId){
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Giveaway");
         query.whereEqualTo("owner", ownerId);
-        query.setLimit(6);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> list, ParseException e) {
                 if (e == null) {
@@ -267,12 +281,19 @@ public class ParseSingleton {
         });
     }
 
-    public void completeGiveaway(ParseObject giveawayObject,ParseUser participant){
+    public void completeGiveaway(ParseObject giveawayObject,HashMap participant){
 
         ArrayList<Object> winnersArray = (ArrayList<Object>)giveawayObject.getList("winners");
+        winnersArray.add(participant);
 
         //Set giveaway to inactive
-        giveawayObject.put("active",false);
+        giveawayObject.put("title","");
+        giveawayObject.put("message","");
+        giveawayObject.put("active", false);
+        giveawayObject.put("participants", new ArrayList<>());
+
+
+
 
         giveawayObject.saveInBackground(new SaveCallback() {
             @Override
@@ -425,5 +446,13 @@ public class ParseSingleton {
                 }
             }
         });
+    }
+
+    public void unFollowUser(ParseUser currentUser,String profileOwnerID){
+
+        ArrayList followingList = (ArrayList)currentUser.getList("following");
+        followingList.remove(profileOwnerID);
+
+        currentUser.saveInBackground();
     }
 }
