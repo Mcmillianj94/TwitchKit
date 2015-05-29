@@ -23,6 +23,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -86,8 +87,8 @@ public class MainPollFragment extends Fragment {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         coverView.removeCoverView();
     }
 
@@ -99,9 +100,6 @@ public class MainPollFragment extends Fragment {
         mRadioGroup = (RadioGroup)v.findViewById(R.id.radioGroup_poll);
         voteButton = (Button)v.findViewById(R.id.button_mainPoll_vote);
         deleteButton = (Button)v.findViewById(R.id.button_mainPoll_delete);
-
-        voteButton.setOnClickListener(onClickListener);
-        deleteButton.setOnClickListener(onClickListener);
         return v;
     }
 
@@ -132,6 +130,8 @@ public class MainPollFragment extends Fragment {
                     })
                     .setNegativeButton("Cancel",null);
             adBuilder.show();
+        }else if (id == R.id.action_refresh){
+            fragmentSetup();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -211,6 +211,13 @@ public class MainPollFragment extends Fragment {
     private void populateUI(){
         mRadioGroup.removeAllViews();
 
+        if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
+            deleteButton.setOnClickListener(onClickListener);
+
+        }else if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
+            voteButton.setOnClickListener(onClickListener);
+        }
+
         //Get arrayListsm from PollObject
         ArrayList pollOptionsArrayList = (ArrayList)mPollObject.getList("options");
         ArrayList votesArrayList = (ArrayList)mPollObject.getList("votes");
@@ -223,9 +230,11 @@ public class MainPollFragment extends Fragment {
             voteButton.setVisibility(View.GONE);
         }
 
-        //Create Radio buttons and progress bars
         for (int i = 0; i < pollOptionsArrayList.size(); i++){
 
+            if (pollOptionsArrayList.get(i) != null){
+
+            }
             //Check if user has entered poll - Or if user is on the forms activity viewing the poll fragment
             if (mPollObject.getList("participants").contains(ParseUser.getCurrentUser().getObjectId())
                     || mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
@@ -267,13 +276,13 @@ public class MainPollFragment extends Fragment {
         coverView.createLoadingCover();
 
         if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
-            //Get current users poll
             mParseSingleton.getPoll(ParseUser.getCurrentUser().getObjectId());
             //Hide vote button
             voteButton.setVisibility(View.GONE);
 
         }else if (mCurrentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
             //Get selected users poll
+            //Get current users poll
             String parseUserID = getActivity().getIntent().getStringExtra(ConstantsLibrary.EXTRA_PARSEUSER_ID);
             mParseSingleton.getPoll(parseUserID);
 
@@ -286,23 +295,39 @@ public class MainPollFragment extends Fragment {
         Dialog d = (Dialog)dialog;
 
         TextView titleTextView = (TextView)d.findViewById(R.id.editText_alert_title);
-        TextView optOneTextView = (TextView)d.findViewById(R.id.editText_alert_optOne);
-        TextView optTwoTextView = (TextView)d.findViewById(R.id.editText_alert_optTwo);
-        TextView optThreeTextView = (TextView)d.findViewById(R.id.editText_alert_optThree);
-        TextView optFourTextView = (TextView)d.findViewById(R.id.editText_alert_optFour);
-        TextView optFiveTextView = (TextView)d.findViewById(R.id.editText_alert_optFive);
+        ArrayList<TextView> textViewArrayList = new ArrayList<>();
+        textViewArrayList.add((TextView)d.findViewById(R.id.editText_alert_optOne));
+        textViewArrayList.add((TextView)d.findViewById(R.id.editText_alert_optTwo));
+        textViewArrayList.add((TextView)d.findViewById(R.id.editText_alert_optThree));
+        textViewArrayList.add((TextView)d.findViewById(R.id.editText_alert_optFour));
+        textViewArrayList.add((TextView)d.findViewById(R.id.editText_alert_optFive));
 
         ArrayList<String> optionsArray = new ArrayList<String>();
-        optionsArray.add(optOneTextView.getText().toString());
-        optionsArray.add(optTwoTextView.getText().toString());
-        optionsArray.add(optThreeTextView.getText().toString());
-        optionsArray.add(optFourTextView.getText().toString());
-        optionsArray.add(optFiveTextView.getText().toString());
 
-        mParseSingleton.createPoll(
-                ParseUser.getCurrentUser().getObjectId(),
-                titleTextView.getText().toString(),
-                optionsArray
-        );
+        int position = 0;
+        for (TextView textView : textViewArrayList){
+
+            String text =  textView.getText().toString();
+            if (position == 0 || position == 1){
+                if (text.equals("")){
+                    Toast.makeText(getActivity(),"Options One and Two are required", Toast.LENGTH_LONG).show();
+                    optionsArray = null;
+                    break;
+                }else {
+                    optionsArray.add(text);
+                }
+            }else if (!text.equals("")){
+                optionsArray.add(text);
+            }
+            position++;
+        }
+
+        if (optionsArray != null){
+            mParseSingleton.createPoll(
+                    ParseUser.getCurrentUser().getObjectId(),
+                    titleTextView.getText().toString(),
+                    optionsArray
+            );
+        }
     }
 }

@@ -34,14 +34,16 @@
             android:id="@+id/parse_login_button"
             style="@style/ParseLoginUI.Button"
             android:layout_weight="0.5"
-            android:text="@string/com_parse_ui_parse_login_button_label" />
+            android:text="@string/com_parse_ui_parse_login_button_label"
+            android:background="@color/grey"/>
 
         <Button
             android:id="@+id/parse_signup_button"
             style="@style/ParseLoginUI.Button"
             android:layout_marginLeft="@dimen/com_parse_ui_small_horizontal_spacing"
             android:layout_weight="0.5"
-            android:text="@string/com_parse_ui_parse_signup_button_label" />
+            android:text="@string/com_parse_ui_parse_signup_button_label"
+            android:background="@color/grey"/>
     </LinearLayout>
 
     <Button

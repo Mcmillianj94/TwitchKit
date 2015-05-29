@@ -155,11 +155,17 @@ containing a value of this type.
         public static int com_parse_ui_parse_login_help_button_label=0x7f040014;
         public static int com_parse_ui_parse_login_help_button_label_focus=0x7f040015;
         public static int com_parse_ui_parse_login_help_button_label_push=0x7f040016;
-        public static int com_parse_ui_parse_login_help_button_label_selector=0x7f04001b;
+        public static int com_parse_ui_parse_login_help_button_label_selector=0x7f040021;
         public static int com_parse_ui_parse_login_text_hint=0x7f040017;
         public static int com_parse_ui_twitter_login_button=0x7f040018;
         public static int com_parse_ui_twitter_login_button_focus=0x7f040019;
         public static int com_parse_ui_twitter_login_button_push=0x7f04001a;
+        public static int darkPurple=0x7f04001b;
+        public static int dirtyWhite=0x7f04001c;
+        public static int grey=0x7f04001d;
+        public static int lightPurple=0x7f04001e;
+        public static int tonedPurple=0x7f04001f;
+        public static int twitchPurple=0x7f040020;
     }
     public static final class dimen {
         public static int com_facebook_likeboxcountview_border_radius=0x7f050000;
@@ -238,7 +244,7 @@ containing a value of this type.
         public static int com_facebook_tooltip_bubble_view_bottom_pointer=0x7f090018;
         public static int com_facebook_tooltip_bubble_view_text_body=0x7f090017;
         public static int com_facebook_tooltip_bubble_view_top_pointer=0x7f090015;
-        public static int create_account=0x7f09002b;
+        public static int create_account=0x7f09002a;
         public static int display_always=0x7f09000d;
         public static int facebook_login=0x7f090024;
         public static int inline=0x7f090007;
@@ -249,7 +255,7 @@ containing a value of this type.
         public static int login_help_submit=0x7f090023;
         public static int login_password_input=0x7f09001c;
         public static int login_username_input=0x7f09001b;
-        public static int messenger_send_button=0x7f09002c;
+        public static int messenger_send_button=0x7f09002b;
         public static int never_display=0x7f09000e;
         public static int normal=0x7f090010;
         public static int open_graph=0x7f090000;
@@ -262,7 +268,6 @@ containing a value of this type.
         public static int right=0x7f09000b;
         public static int signup_confirm_password_input=0x7f090028;
         public static int signup_email_input=0x7f090029;
-        public static int signup_name_input=0x7f09002a;
         public static int signup_password_input=0x7f090027;
         public static int signup_username_input=0x7f090026;
         public static int small=0x7f090011;

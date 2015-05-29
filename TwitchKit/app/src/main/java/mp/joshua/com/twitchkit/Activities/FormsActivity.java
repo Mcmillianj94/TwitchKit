@@ -1,5 +1,6 @@
 package mp.joshua.com.twitchkit.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -86,7 +87,12 @@ public class FormsActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_settings) {
-            return true;
+            if(ParseUser.getCurrentUser() != null){
+                Intent intent = new Intent(FormsActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }else {
+                parseSingleton.showLoginNotification(FormsActivity.this);
+            }
         }else if (id == R.id.action_logout){
             parseSingleton.logUserOut(FormsActivity.this);
 

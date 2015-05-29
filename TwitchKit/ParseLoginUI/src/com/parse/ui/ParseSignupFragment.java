@@ -47,7 +47,6 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
   private EditText passwordField;
   private EditText confirmPasswordField;
   private EditText emailField;
-  private EditText nameField;
   private Button createAccountButton;
   private ParseOnLoginSuccessListener onLoginSuccessListener;
 
@@ -90,7 +89,6 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
     confirmPasswordField = (EditText) v
         .findViewById(R.id.signup_confirm_password_input);
     emailField = (EditText) v.findViewById(R.id.signup_email_input);
-    nameField = (EditText) v.findViewById(R.id.signup_name_input);
     createAccountButton = (Button) v.findViewById(R.id.create_account);
 
     usernameField.setText(username);
@@ -147,11 +145,6 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       email = emailField.getText().toString();
     }
 
-    String name = null;
-    if (nameField != null) {
-      name = nameField.getText().toString();
-    }
-
     if (username.length() == 0) {
       if (config.isParseLoginEmailAsUsername()) {
         showToast(R.string.com_parse_ui_no_email_toast);
@@ -172,8 +165,6 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       confirmPasswordField.requestFocus();
     } else if (email != null && email.length() == 0) {
       showToast(R.string.com_parse_ui_no_email_toast);
-    } else if (name != null && name.length() == 0) {
-      showToast(R.string.com_parse_ui_no_name_toast);
     } else {
       ParseUser user = new ParseUser();
 
@@ -183,9 +174,6 @@ public class ParseSignupFragment extends ParseLoginFragmentBase implements OnCli
       user.setEmail(email);
 
       // Set additional custom fields only if the user filled it out
-      if (name.length() != 0) {
-        user.put(USER_OBJECT_NAME_FIELD, name);
-      }
 
       loadingStart();
       user.signUpInBackground(new SignUpCallback() {

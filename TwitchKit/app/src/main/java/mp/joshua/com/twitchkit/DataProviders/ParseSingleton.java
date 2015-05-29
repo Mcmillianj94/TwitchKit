@@ -1,8 +1,10 @@
 package mp.joshua.com.twitchkit.DataProviders;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
@@ -17,6 +19,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.ui.ParseLoginActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +47,26 @@ public class ParseSingleton {
             instance = new ParseSingleton();
         }
         return instance;
+    }
+
+    public void showLoginNotification(final Activity activity){
+        if (ParseUser.getCurrentUser() == null){
+            AlertDialog.Builder loginAlert = new AlertDialog.Builder(activity);
+            loginAlert.setTitle("Login");
+            loginAlert.setMessage("You must be logged in to make this action.");
+
+            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent loginIntent = new Intent(activity, ParseLoginActivity.class);
+                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
+                    activity.startActivity(loginIntent);
+                }
+            });
+
+            loginAlert.setNegativeButton("Close",null);
+            loginAlert.show();
+        }
     }
 
     public void logUserOut(Context context){
@@ -114,35 +137,29 @@ public class ParseSingleton {
         }
     }
 
-    public boolean createSupportLink(String title, String link, String image){
-        ArrayList <String> testStrings = new ArrayList<>();
-        testStrings.add(title);
-        testStrings.add(link);
-        testStrings.add(image);
+    public void createSupportLink(String title, String link, String image){
 
-        for (String s : testStrings){
-            if (s == null){
-                return false;
-            }
-        }
-
-        ParseObject supportLink = new ParseObject("SupportLinks");
-        supportLink.put("owner", ParseUser.getCurrentUser().getObjectId());
-        supportLink.put("title", title);
-        supportLink.put("link",link);
-        supportLink.put("image",image);
-        supportLink.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null){
-                    didSave = true;
-                }else{
-                    didSave = false;
-                    e.printStackTrace();
+        if (title.equals("") || link.equals("")){
+            Intent deletedIntent = new Intent(ConstantsLibrary.ACTION_SUPPORTLINKS_NULL_INPUT);
+            mContext.sendBroadcast(deletedIntent);
+        }else {
+            ParseObject supportLink = new ParseObject("SupportLinks");
+            supportLink.put("owner", ParseUser.getCurrentUser().getObjectId());
+            supportLink.put("title", title);
+            supportLink.put("link",link);
+            supportLink.put("image",image);
+            supportLink.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null){
+                        Intent saveIntent = new Intent(ConstantsLibrary.ACTION_SUPPORTLINKS_CHANGED);
+                        mContext.sendBroadcast(saveIntent);
+                    }else{
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
-        return didSave;
+            });
+        }
     }
 
     public void getSuportLinkList(String ownerId){
@@ -151,10 +168,7 @@ public class ParseSingleton {
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> scoreList, ParseException e) {
                 if (e == null) {
-                    ArrayList<Object> tempArray = new ArrayList<Object>();
-                    for (ParseObject poTemp : scoreList) {
-                        tempArray.add(poTemp);
-                    }
+                    ArrayList tempArray = (ArrayList)scoreList;
                     mDataPostOffice.setSupportLinkArrayList(tempArray);
 
                     Intent userlistIntent = new Intent(ConstantsLibrary.ACTION_GET_SUPPORTLINKS);
@@ -171,7 +185,18 @@ public class ParseSingleton {
         query.getInBackground(objectID, new GetCallback<ParseObject>() {
             public void done(ParseObject object, ParseException e) {
                 if (e == null) {
-                    object.deleteInBackground();
+                    object.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null){
+                                Intent deletedIntent = new Intent(ConstantsLibrary.ACTION_SUPPORTLINKS_CHANGED);
+                                mContext.sendBroadcast(deletedIntent);
+                            }else {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+
                 } else {
                     e.printStackTrace();
                 }
@@ -208,23 +233,28 @@ public class ParseSingleton {
             Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_ALREADYACTIVE);
             mContext.sendBroadcast(giveawayCreatedIntent);
         }else {
-            giveawayObject.put("owner", ownerId);
-            giveawayObject.put("title",title);
-            giveawayObject.put("message",message);
-            giveawayObject.put("active", true);
-            giveawayObject.put("participants", new ArrayList<>());
+            if (title == null){
+                Intent nullIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_NULLINPUT);
+                mContext.sendBroadcast(nullIntent);
+            }else {
+                giveawayObject.put("owner", ownerId);
+                giveawayObject.put("title",title);
+                giveawayObject.put("message",message);
+                giveawayObject.put("active", true);
+                giveawayObject.put("participants", new ArrayList<>());
 
-            giveawayObject.saveInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e ==  null){
-                        Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_CREATED);
-                        mContext.sendBroadcast(giveawayCreatedIntent);
-                    }else{
-                        e.printStackTrace();
+                giveawayObject.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e ==  null){
+                            Intent giveawayCreatedIntent = new Intent(ConstantsLibrary.ACTION_GIVEAWAY_CREATED);
+                            mContext.sendBroadcast(giveawayCreatedIntent);
+                        }else{
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
@@ -354,7 +384,7 @@ public class ParseSingleton {
     }
 
     public void submitPollVote(String userID,ParseObject pollObject,int vote){
-        Log.d("GritzTest","" + vote);
+        Log.d("Gritz","" + vote);
         ArrayList<Object> voteList = null;
         ArrayList<Object> participantList = null;
         voteList = (ArrayList<Object>)pollObject.getList("votes");

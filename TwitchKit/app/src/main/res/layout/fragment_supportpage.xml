@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/relative_supportFrag_viewHolder">
 
-    <RelativeLayout
+    <ListView
+        android:id="@+id/supportPage_Listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_above="@+id/supportFrag_continueToProfile"/>
 
-        <ListView
-            android:id="@+id/supportPage_Listview"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/supportFrag_continueToProfile"/>
-
-        <Button
-            android:id="@+id/supportFrag_continueToProfile"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_alignParentBottom="true"
-            android:text="Continue"
-            android:background="@color/tonedPurple"
-            android:elevation="4dp"/>
-
-    </RelativeLayout>
+    <Button
+        android:id="@+id/supportFrag_continueToProfile"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:text="Continue"
+        android:background="@color/tonedPurple"
+        android:elevation="4dp"/>
 
 </RelativeLayout>

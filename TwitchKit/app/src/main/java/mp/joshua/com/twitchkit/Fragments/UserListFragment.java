@@ -1,16 +1,15 @@
 package mp.joshua.com.twitchkit.Fragments;
 
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,7 +17,6 @@ import android.widget.ExpandableListView;
 import android.widget.RelativeLayout;
 
 import com.parse.ParseUser;
-import com.parse.ui.ParseLoginActivity;
 
 import java.util.ArrayList;
 
@@ -56,6 +54,7 @@ public class UserListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         mParseSingleton = ParseSingleton.getInstance(getActivity());
         mDataPostOffice = DataPostOffice.getInstance(getActivity());
     }
@@ -81,6 +80,11 @@ public class UserListFragment extends Fragment {
         hasPaused = true;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCoverView.removeCoverView();
+    }
 
     @Nullable
     @Override
@@ -95,13 +99,25 @@ public class UserListFragment extends Fragment {
 
         streamerToolButton = (Button)v.findViewById(R.id.button_userList_streamerTools);
         streamerToolButton.setOnClickListener(streamerToolsClickListener);
+
+        mCoverView = new CoverView(getActivity(),viewHolder);
         return v;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if(itemId == R.id.action_refresh){
+            mCoverView.removeCoverView();
+            setUpFragment();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCoverView = new CoverView(getActivity(),viewHolder);
         setUpFragment();
     }
 
@@ -181,28 +197,8 @@ public class UserListFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), FormsActivity.class);
                 startActivity(intent);
             }else {
-                showLoginNotification();
+                mParseSingleton.showLoginNotification(getActivity());
             }
         }
     };
-
-    private void showLoginNotification(){
-        if (ParseUser.getCurrentUser() == null){
-            AlertDialog.Builder loginAlert = new AlertDialog.Builder(getActivity());
-            loginAlert.setTitle("Login");
-            loginAlert.setMessage("You must be logged in to access this screen.");
-
-            loginAlert.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent loginIntent = new Intent(getActivity(), ParseLoginActivity.class);
-                    loginIntent.putExtra(ConstantsLibrary.EXTRA_ACTIVITY_INTENTSENDER,ConstantsLibrary.EXTRA_FRAGMENT_LOGIN);
-                    startActivity(loginIntent);
-                }
-            });
-
-            loginAlert.setNegativeButton("Close",null);
-            loginAlert.show();
-        }
-    }
 }

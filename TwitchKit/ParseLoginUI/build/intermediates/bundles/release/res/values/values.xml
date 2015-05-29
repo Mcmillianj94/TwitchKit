@@ -16,6 +16,12 @@
     <color name="com_parse_ui_twitter_login_button">#2DAAE2</color>
     <color name="com_parse_ui_twitter_login_button_focus">#2788BE</color>
     <color name="com_parse_ui_twitter_login_button_push">#2588B5</color>
+    <color name="darkPurple">#574578</color>
+    <color name="dirtyWhite">#e8e8e8</color>
+    <color name="grey">#2c2c2f</color>
+    <color name="lightPurple">#e3d8eb</color>
+    <color name="tonedPurple">#a9a2b8</color>
+    <color name="twitchPurple">#7b62aa</color>
     <!-- From: file:/Users/joshuamcmillian/Documents/FullSail/Intergrated%20Product%20Development/TwitchKitRepo/TwitchKit/ParseLoginUI/res/values/dimens.xml -->
     <eat-comment/>
     <dimen name="com_parse_ui_horizontal_margin">16dp</dimen>

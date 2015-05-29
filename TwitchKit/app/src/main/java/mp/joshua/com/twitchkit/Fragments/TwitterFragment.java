@@ -28,6 +28,7 @@ public class TwitterFragment extends Fragment {
     RelativeLayout viewHolder;
     ParseUser profileOwner;
     DataPostOffice mDatapostOffice;
+    CoverView mCoverView;
 
     public static TwitterFragment newInstance(){
         TwitterFragment fragment = new TwitterFragment();
@@ -54,16 +55,26 @@ public class TwitterFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCoverView.removeCoverView();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_twitterfeed,container,false);
         viewHolder = (RelativeLayout)v.findViewById(R.id.relative_twitterFrag_viewHolder);
         twitterWebView = (WebView)v.findViewById(R.id.WebView_twitterFeedFrag_feed);
+        mCoverView = new CoverView(getActivity(),viewHolder);
         return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(profileOwner != null){
+            populateUI();
+        }
     }
 
     BroadcastReceiver twitterFragCallbackReciever = new BroadcastReceiver() {
@@ -81,6 +92,7 @@ public class TwitterFragment extends Fragment {
     };
 
     private void populateUI() {
+        mCoverView.createLoadingCover();
         //get Twitter name
         String twitterUsername = profileOwner.getString("twitterName");
 
@@ -91,5 +103,6 @@ public class TwitterFragment extends Fragment {
             CoverView coverView = new CoverView(getActivity(),viewHolder);
             coverView.createInstructionCover(ConstantsLibrary.CONST_TWITTERFEED_NULL_MESSAGE,null);
         }
+        mCoverView.removeCoverView();
     }
 }

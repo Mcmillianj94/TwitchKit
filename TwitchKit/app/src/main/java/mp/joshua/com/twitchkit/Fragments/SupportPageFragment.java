@@ -21,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -28,6 +30,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 
 import mp.joshua.com.twitchkit.Adapters.SupportPageAdapter;
+import mp.joshua.com.twitchkit.CoverView;
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
 import mp.joshua.com.twitchkit.DataProviders.DataPostOffice;
 import mp.joshua.com.twitchkit.DataProviders.ParseSingleton;
@@ -40,6 +43,8 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
 
     ParseSingleton mParseSingleton;
     DataPostOffice mDataPostOffice;
+    CoverView mCoverView;
+    RelativeLayout mViewHolder;
 
     FragmentManager fragmentManager;
     private String mCurrentActivity;
@@ -71,8 +76,11 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        IntentFilter intentFilter = new IntentFilter(ConstantsLibrary.ACTION_GET_SUPPORTLINKS);
-        getActivity().registerReceiver(broadcastReceiver,intentFilter);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConstantsLibrary.ACTION_GET_SUPPORTLINKS);
+        intentFilter.addAction(ConstantsLibrary.ACTION_SUPPORTLINKS_CHANGED);
+        intentFilter.addAction(ConstantsLibrary.ACTION_SUPPORTLINKS_NULL_INPUT);
+        getActivity().registerReceiver(broadcastReceiver, intentFilter);
         pullSupportLinks(ownerID);
     }
 
@@ -80,6 +88,12 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCoverView.removeCoverView();
     }
 
     @Override
@@ -97,36 +111,30 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
         int id = item.getItemId();
         if (id == R.id.action_add){
             showSupportLinkForm(true,0);
+        }else if (id == R.id.action_refresh){
+            pullSupportLinks(ownerID);
         }
         return true;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_supportpage,container,false);
+        View v = inflater.inflate(R.layout.fragment_supportpage,container,false);
+        mViewHolder = (RelativeLayout)v.findViewById(R.id.relative_supportFrag_viewHolder);
+        continueButton = (Button)v.findViewById(R.id.supportFrag_continueToProfile);
+        supportLinkListView = (ListView)v.findViewById(R.id.supportPage_Listview);
+
+        supportLinkListView.setOnItemClickListener(onItemClickListener);
+        return v;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        mCoverView = new CoverView(getActivity(),mViewHolder);
         recievedArgs = getArguments();
-        continueButton = (Button)getView().findViewById(R.id.supportFrag_continueToProfile);
-
-        supportLinkListView = (ListView)getView().findViewById(R.id.supportPage_Listview);
-        supportLinkListView.setOnItemClickListener(onItemClickListener);
-        supportLinkListView.setOnItemLongClickListener(onItemLongClickListener);
-
-        if (recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
-            continueButton.setOnClickListener(continueClickListener);
-
-        }else if(recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
-            continueButton.setVisibility(View.GONE);
-        }
-    }
-
-    public void pullSupportLinks(String ownerID){
-        mParseSingleton.getSuportLinkList(ownerID);
+        fragmentSetUp();
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -136,19 +144,40 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
 
             if (intentAction.equals(ConstantsLibrary.ACTION_GET_SUPPORTLINKS)){
                 supportLinksArray = mDataPostOffice.getSupportLinkArrayList();
+
+            }else if(intentAction.equals(ConstantsLibrary.ACTION_SUPPORTLINKS_CHANGED)){
+                pullSupportLinks(ParseUser.getCurrentUser().getObjectId());
+
+            }else if(intentAction.equals(ConstantsLibrary.ACTION_SUPPORTLINKS_NULL_INPUT)){
+                Toast.makeText(getActivity(),"Fields Title and Url must have content", Toast.LENGTH_LONG).show();
             };
 
-            if (supportLinksArray != null){
+
+            if(supportLinksArray.size() != 0){
                 SupportPageAdapter adapter = new SupportPageAdapter(getActivity(),supportLinksArray);
                 supportLinkListView.setAdapter(adapter);
-            }else {
-                AlertDialog.Builder alert = new AlertDialog.Builder(getActivity())
-                        .setMessage("Data could not be retrieved")
-                        .setPositiveButton("ok",null);
-                alert.show();
+                mCoverView.removeCoverView();
+            }else{
+                mCoverView.removeCoverView();
+                mCoverView.createInstructionCover(ConstantsLibrary.CONST_SUPPORTPAGE_NULL_MESSAGE,mCurrentActivity);
             }
         }
     };
+
+    public void pullSupportLinks(String ownerID){
+        mParseSingleton.getSuportLinkList(ownerID);
+    }
+
+    private void fragmentSetUp(){
+        mCoverView.createLoadingCover();
+        if (recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
+            continueButton.setOnClickListener(continueClickListener);
+
+        }else if(recievedArgs.getString(ConstantsLibrary.ARG_CURRENT_ACTIVITY).equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
+            supportLinkListView.setOnItemLongClickListener(onItemLongClickListener);
+            continueButton.setVisibility(View.GONE);
+        }
+    }
 
     AdapterView.OnItemLongClickListener onItemLongClickListener = new AdapterView.OnItemLongClickListener() {
         @Override
@@ -196,8 +225,6 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
                             lTitle.getText().toString(),
                             lURL.getText().toString(),
                             lPicture.getText().toString());
-
-                    pullSupportLinks(ParseUser.getCurrentUser().getObjectId());
                 }
             });
 
@@ -215,7 +242,6 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
                             lURL.getText().toString(),
                             lPicture.getText().toString());
 
-                    pullSupportLinks(ParseUser.getCurrentUser().getObjectId());
                 }
             });
             //Alert Dialog has delete button.
@@ -223,7 +249,6 @@ public class SupportPageFragment extends android.support.v4.app.Fragment{
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     mParseSingleton.deleteSupportLink(parseObject.getObjectId());
-                    pullSupportLinks(ParseUser.getCurrentUser().getObjectId());
                 }
             });
 

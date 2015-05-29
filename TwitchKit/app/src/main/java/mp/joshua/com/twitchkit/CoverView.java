@@ -66,6 +66,14 @@ public class CoverView {
                 }
                 break;
 
+            case ConstantsLibrary.CONST_SUPPORTPAGE_NULL_MESSAGE:
+                if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
+                    message = "You do not have any support links at this time. Tap the + at the top to create a new one";
+                }else if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
+                    message = "User has no supports links listed. Tap continue to progress to the profile.";
+                }
+                break;
+
             case ConstantsLibrary.CONST_QUERY_ERROR_MESSAGE:
                 message = "Data could not be retrieved at this time";
                 break;

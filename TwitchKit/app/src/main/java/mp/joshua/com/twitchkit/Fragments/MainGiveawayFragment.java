@@ -95,6 +95,7 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_COMPLETED);
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_ENTERED);
         intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR);
+        intentFilter.addAction(ConstantsLibrary.ACTION_GIVEAWAY_NULLINPUT);
         getActivity().registerReceiver(broadcastReceiver,intentFilter);
     }
 
@@ -105,8 +106,8 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         coverView.removeCoverView();
     }
 
@@ -145,6 +146,9 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
                     })
                     .setNegativeButton("Cancel",null);
             adBuilder.show();
+        }else if (id == R.id.action_refresh){
+            coverView.removeCoverView();
+            fragmentSetUp();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -174,12 +178,12 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
                 case R.id.Button_mainGiveaway_pickWinner:
                     Random rand = new Random();
                     List tempList = giveawayObject.getList("participants");
-                    if (tempList.size() >= 5){
+                    if (tempList.size() >= 2){
                         int n = rand.nextInt(tempList.size());
                         HashMap winnerObject = (HashMap)tempList.get(n);
                         mParseSingleton.completeGiveaway(giveawayObject, winnerObject);
                     }else {
-                        Toast.makeText(getActivity(),"You must have at least 5 participants to complete giveaway", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(),"You must have at least 2 participants to complete giveaway", Toast.LENGTH_LONG).show();
                     }
                     break;
             }
@@ -217,7 +221,7 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
                     break;
 
                 case ConstantsLibrary.ACTION_GIVEAWAY_COMPLETED:
-
+                    fragmentSetUp();
                     break;
 
                 case ConstantsLibrary.ACTION_GIVEAWAY_DATAERROR:
@@ -228,6 +232,10 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
                     }else if (intent.getExtras().getString(ConstantsLibrary.EXTRA_ERROR_TYPE).equals(ConstantsLibrary.EXTRA_ERRORTYPE_QUERY)){
                         coverView.createInstructionCover(ConstantsLibrary.CONST_QUERY_ERROR_MESSAGE,currentActivity);
                     }
+                    break;
+
+                case ConstantsLibrary.ACTION_GIVEAWAY_NULLINPUT:
+                    Toast.makeText(getActivity(),"Giveaway must have title", Toast.LENGTH_LONG).show();
                     break;
             }
         }
@@ -248,13 +256,11 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
             mParseSingleton.getGiveaway(parseUserID);
             participantsHolder.setVisibility(View.GONE);
             pickWinnerButton.setVisibility(View.GONE);
-            submitButton.setOnClickListener(onClickListener);
 
         //Setup for Form
         }else if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
             mParseSingleton.getGiveaway(ParseUser.getCurrentUser().getObjectId());
             submitButton.setVisibility(View.GONE);
-            pickWinnerButton.setOnClickListener(onClickListener);
         }
     }
 
@@ -262,7 +268,12 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
     private void populateUI(){
 
         if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_PROFILE)){
+            submitButton.setOnClickListener(onClickListener);
+
+            //Setup for Form
+        }else if (currentActivity.equals(ConstantsLibrary.ARG_ACTIVITY_FORMS)){
             previousWinnersSetUp(winnersHolder);
+            pickWinnerButton.setOnClickListener(onClickListener);
         }
 
         ArrayList<Object> tempArray = (ArrayList<Object>)giveawayObject.getList("participants");
@@ -277,12 +288,15 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
         mTitleTextView.setText(giveawayObject.getString("title"));
         mMessageTextView.setText(giveawayObject.getString("message"));
         mParticipantCount.setText("" + giveawayObject.getList("participants").size());
+
+        viewHolder.setClickable(true);
         coverView.removeCoverView();
     }
 
     //Previous Winners layout setUP
     private void previousWinnersSetUp(LinearLayout view){
 
+        view.removeAllViews();
         ArrayList winnersArray = (ArrayList)giveawayObject.getList("winners");
 
         view.setPadding(24,8,24,8);
@@ -317,6 +331,9 @@ public class MainGiveawayFragment extends android.support.v4.app.Fragment{
 
             view.addView(usernameView);
             view.addView(emailView);
+            if (i == 2){
+                break;
+            }
         }
     }
 }

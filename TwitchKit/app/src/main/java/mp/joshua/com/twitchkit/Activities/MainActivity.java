@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.parse.Parse;
 import com.parse.ParseUser;
 import com.parse.ui.ParseLoginBuilder;
 
@@ -34,10 +33,6 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "Dqd3nKnC4IGhqRkcsw8ylQXcQUkGq0dJMyDIJgPo", "gXnQrBFy2viRiSixadRPTmYBDYI7lqkIx6iDWzUx");
 
         parseSingleton = ParseSingleton.getInstance(MainActivity.this);
         mDataPostOffice = DataPostOffice.getInstance(MainActivity.this);
@@ -72,14 +67,18 @@ public class MainActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int actionId = item.getItemId();
 
-        switch (actionId){
+        switch (actionId) {
             case R.id.action_settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
+                if(ParseUser.getCurrentUser() != null){
+                    Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                    startActivity(intent);
+                }else {
+                    parseSingleton.showLoginNotification(MainActivity.this);
+                }
                 break;
             case R.id.action_login:
                 ParseLoginBuilder builder = new ParseLoginBuilder(MainActivity.this);
-                startActivityForResult(builder.build(),0);
+                startActivityForResult(builder.build(), 0);
                 break;
             case R.id.action_logout:
                 parseSingleton.logUserOut(MainActivity.this);
@@ -87,7 +86,7 @@ public class MainActivity extends ActionBarActivity {
                 sendBroadcast(loggedOutIntent);
                 break;
         }
-        return true;
+        return super.onOptionsItemSelected(item);
     }
 
     public void toolBarSearch(Menu menu){

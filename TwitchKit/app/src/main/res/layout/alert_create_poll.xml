@@ -20,7 +20,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Poll Title"/>
+                android:hint="Poll Title"
+                android:maxLines="2"/>
 
             <EditText
                 android:id="@+id/editText_alert_optOne"
@@ -28,7 +29,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Option One"/>
+                android:hint="Option One (Required)"
+                android:maxLines="1"/>
 
             <EditText
                 android:id="@+id/editText_alert_optTwo"
@@ -36,7 +38,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Option Two"/>
+                android:hint="Option Two (Required)"
+                android:maxLines="1"/>
 
             <EditText
                 android:id="@+id/editText_alert_optThree"
@@ -44,7 +47,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Option Three"/>
+                android:hint="Option Three"
+                android:maxLines="1"/>
 
             <EditText
                 android:id="@+id/editText_alert_optFour"
@@ -52,7 +56,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Option Four"/>
+                android:hint="Option Four"
+                android:maxLines="1"/>
 
             <EditText
                 android:id="@+id/editText_alert_optFive"
@@ -60,7 +65,8 @@
                 android:layout_height="48dp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:hint="Option Five"/>
+                android:hint="Option Five"
+                android:maxLines="1"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

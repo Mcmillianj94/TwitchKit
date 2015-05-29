@@ -20,7 +20,9 @@ public class ConstantsLibrary {
 
     public static final String ACTION_LOGGED_OUT = "actionLoggedOut";
 
+    public static final String ACTION_SUPPORTLINKS_CHANGED = "supportLinkChanged";
     public static final String ACTION_GET_SUPPORTLINKS = "actionGetSupportLinks";
+    public static final String ACTION_SUPPORTLINKS_NULL_INPUT = "supportLinkNullInput";
 
     public static final String ACTION_PROFILE_QUERY_ERROR = "profileQueryError";
 
@@ -30,6 +32,7 @@ public class ConstantsLibrary {
     public static final String ACTION_GIVEAWAY_COMPLETED = "giveawayDeleted";
     public static final String ACTION_GIVEAWAY_DATAERROR = "giveawayDataError";
     public static final String ACTION_GIVEAWAY_ENTERED = "giveawayEntered";
+    public static final String ACTION_GIVEAWAY_NULLINPUT = "giveawayNullInput";
     public static final String ACTION_GIVEAWAY_WINNERS = " giveaway";
 
     public static final String ACTION_POLL_CREATED = "pollCreated";
@@ -39,6 +42,7 @@ public class ConstantsLibrary {
     public static final String ACTION_POLL_DATAERROR = "pollDataError";
 
     public static final String ACTION_SETTING_CHANGED = "settingChanged";
+    public static final String ACTION_SETTING_COVERT_PHOTO = "settingConvertPhoto";
 
     public static final String ACTION_PROFILE_OWNER_RETRIEVED = "profileOwnerRetrieved";
     public static final String ACTION_PROFILE_OWNER_FOLLOWED = "profileOwnerFollowed";
@@ -49,6 +53,7 @@ public class ConstantsLibrary {
     public static final int CONST_QUERY_ERROR_MESSAGE = 40;
     public static final int CONST_TWITTERFEED_NULL_MESSAGE = 50;
     public static final int CONST_USER_NULL_MESSAGE = 60;
+    public static final int CONST_SUPPORTPAGE_NULL_MESSAGE = 70;
 
     public static final String TAG_SETTINGS_BIO = "bioChangeAlert";
     public static final String TAG_SETTINGS_TWITTERNAME = "twitterChangeAlert";

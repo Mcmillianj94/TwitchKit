@@ -15,7 +15,7 @@ public class DataPostOffice {
     private ArrayList<ParseUser> parseUserArrayList;
     private ArrayList<ParseUser> parseUserSearchArrayList;
 
-    private ArrayList<Object> supportLinkArrayList;
+    private ArrayList supportLinkArrayList;
 
     private ArrayList<Fragment> formActivityFragmentList;
 
@@ -54,10 +54,10 @@ public class DataPostOffice {
     }
 
     //supportLinkArrayList Getter and Setter
-    public void setSupportLinkArrayList(ArrayList<Object> recievedList){
+    public void setSupportLinkArrayList(ArrayList recievedList){
         this.supportLinkArrayList = recievedList;
     }
-    public  ArrayList<Object> getSupportLinkArrayList(){
+    public  ArrayList getSupportLinkArrayList(){
         return supportLinkArrayList;
     }
 

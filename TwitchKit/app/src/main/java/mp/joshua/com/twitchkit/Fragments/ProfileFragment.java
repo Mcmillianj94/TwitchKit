@@ -81,6 +81,11 @@ public class ProfileFragment extends Fragment {
     public void onPause() {
         super.onPause();
         getActivity().unregisterReceiver(profileCallbackReciever);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
         mCoverView.removeCoverView();
     }
 
@@ -119,7 +124,7 @@ public class ProfileFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
         if (profileOwner != null){
             populateToolBar(menu);
-            Log.d("GritzTest", "this junk work");
+            Log.d("Test", "this junk work");
         }
     }
 
@@ -127,13 +132,13 @@ public class ProfileFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-
         if (itemId == R.id.action_not_followed){
             //Add profileOwner to current users following list
             mParseSigleton.followUser(ParseUser.getCurrentUser(),profileOwner.getObjectId());
         }else if (itemId == R.id.action_followed){
             mParseSigleton.unFollowUser(ParseUser.getCurrentUser(),profileOwner.getObjectId());
         }
+
         return true;
     }
 
@@ -241,14 +246,24 @@ public class ProfileFragment extends Fragment {
     private void populateToolBar(Menu menu){
         MenuItem followItem = menu.findItem(R.id.action_not_followed);
         MenuItem unFollowItem = menu.findItem(R.id.action_followed);
-        ArrayList followingList = (ArrayList)ParseUser.getCurrentUser().getList("following");
-
-        if (followingList.contains(profileOwner.getObjectId())){
-            followItem.setVisible(false);
-            unFollowItem.setVisible(true);
-        }else {
-            followItem.setVisible(true);
-            unFollowItem.setVisible(false);
-        };
+        ArrayList followingList = null;
+        if(ParseUser.getCurrentUser() != null){
+            followingList = (ArrayList)ParseUser.getCurrentUser().getList("following");
+            if (followingList != null){
+                if (followingList.contains(profileOwner.getObjectId())){
+                    followItem.setVisible(false);
+                    unFollowItem.setVisible(true);
+                }else {
+                    followItem.setVisible(true);
+                    unFollowItem.setVisible(false);
+                };
+            }else {
+                mParseSigleton.editPorfile(
+                        ParseUser.getCurrentUser(),
+                        "following",
+                        new ArrayList<>()
+                );
+            }
+        }
     }
 }

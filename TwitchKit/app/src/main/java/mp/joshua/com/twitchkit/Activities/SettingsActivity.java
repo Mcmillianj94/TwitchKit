@@ -2,13 +2,10 @@ package mp.joshua.com.twitchkit.Activities;
 
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -18,19 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.image.SmartImageView;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import mp.joshua.com.twitchkit.DataProviders.ConstantsLibrary;
 import mp.joshua.com.twitchkit.DataProviders.ParseSingleton;
 import mp.joshua.com.twitchkit.R;
+import mp.joshua.com.twitchkit.Services.ImageCoverterService;
 
 
 public class SettingsActivity extends ActionBarActivity {
@@ -63,6 +56,8 @@ public class SettingsActivity extends ActionBarActivity {
         twitterButton.setOnClickListener(showEditViewClickListener);
 
         profilePictureButton.setOnClickListener(launchActivityClickListener);
+
+        populateUI();
     }
 
     @Override
@@ -81,7 +76,6 @@ public class SettingsActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Toast.makeText(SettingsActivity.this,"RESULT_YAY",Toast.LENGTH_SHORT).show();
         if (resultCode == RESULT_OK){
             //Get image uri
             imageURI = data.getData();
@@ -98,7 +92,6 @@ public class SettingsActivity extends ActionBarActivity {
 
             switch (acionID){
                 case ConstantsLibrary.ACTION_SETTING_CHANGED:
-                    Toast.makeText(SettingsActivity.this,"YAY",Toast.LENGTH_SHORT).show();
                     populateUI();
                     break;
             }
@@ -154,8 +147,10 @@ public class SettingsActivity extends ActionBarActivity {
             switch (inflatedEditView.getTag().toString()){
                 ////Profile picture save
                 case ConstantsLibrary.TAG_SETTINGS_PROFILEPIC:
-                    imageBytes = convertToBytes(imageURI);
-                    mParseSingleton.editProfilePicture(ParseUser.getCurrentUser(), imageBytes);
+                    Intent convertPhotoIntent = new Intent(SettingsActivity.this, ImageCoverterService.class);
+                    convertPhotoIntent.setAction(ConstantsLibrary.ACTION_SETTING_COVERT_PHOTO);
+                    convertPhotoIntent.setData(imageURI);
+                    startService(convertPhotoIntent);
                     break;
 
                 ////Bio save
@@ -240,20 +235,5 @@ public class SettingsActivity extends ActionBarActivity {
         }
         editView.setView(inflatedEditView);
         editView.show();
-    }
-
-    private byte[] convertToBytes(Uri uri) {
-        byte[] data= null;
-        try {
-            ContentResolver cr = getBaseContext().getContentResolver();
-            InputStream inputStream = cr.openInputStream(uri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            data = baos.toByteArray();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return data;
     }
 }
